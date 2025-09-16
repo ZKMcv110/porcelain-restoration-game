@@ -743,8 +743,8 @@ function initCleaningStep() {
         vessel.id = 'cracked-vessel';
         vessel.dataset.cleaned = 'false';
         vessel.style.cssText = `
-            width: ${isMobile ? '150px' : '200px'};
-            height: ${isMobile ? '150px' : '200px'};
+            width: 200px;
+            height: 200px;
             background: url('images/damaged.jpg') center/cover no-repeat;
             border-radius: 15px;
             cursor: pointer;
@@ -953,22 +953,9 @@ function addDragEvents(element) {
 }
 
 function initMarkingStep() {
-    // 初始化标记步骤
+    // 初始化标记步骤（将坐标以百分比保存，便于后续自适应）
     const canvas = document.getElementById('marking-canvas');
     const ctx = canvas.getContext('2d');
-
-    // 统一实际像素与CSS尺寸，避免点击偏移
-    if (isMobile) {
-        canvas.width = 300;
-        canvas.height = 200;
-        canvas.style.width = '300px';
-        canvas.style.height = '200px';
-    } else {
-        canvas.width = 400;
-        canvas.height = 300;
-        canvas.style.width = '400px';
-        canvas.style.height = '300px';
-    }
     
     // 检测移动设备
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -981,7 +968,7 @@ function initMarkingStep() {
         
         let markCount = 0;
         const maxMarks = 6;
-        const markPositions = []; // 存储标记位置
+        const markPositions = []; // 存储标记位置（百分比坐标 px, py）
         
         // 获取正确的坐标位置
         function getEventPos(e) {
@@ -997,10 +984,9 @@ function initMarkingStep() {
             }
             
             // 修复移动端坐标计算
-            return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height)
-            };
+            const x = (clientX - rect.left) * (canvas.width / rect.width);
+            const y = (clientY - rect.top) * (canvas.height / rect.height);
+            return { x, y };
         }
         
         function handleMark(e) {
@@ -1017,8 +1003,10 @@ function initMarkingStep() {
                     navigator.vibrate(50);
                 }
                 
-                // 存储标记位置
-                markPositions.push({x: pos.x, y: pos.y, id: markCount + 1});
+                // 以百分比方式保存，后续步骤按容器尺寸换算
+                const px = pos.x / canvas.width;
+                const py = pos.y / canvas.height;
+                markPositions.push({ px, py, id: markCount + 1 });
                 
                 // 绘制标记点 - 移动端增大标记点
                 ctx.fillStyle = '#FFD700';
@@ -1043,7 +1031,7 @@ function initMarkingStep() {
                     showMessage('标记完成！所有钻孔位置已确定。');
                     document.getElementById('complete-btn').style.display = 'inline-block';
                     
-                    // 将标记位置存储到gameState中供下一步使用
+                    // 存储百分比坐标
                     gameState.markPositions = markPositions;
                 }
             }
@@ -1056,7 +1044,7 @@ function initMarkingStep() {
 }
 
 function initDrillingStep() {
-    // 初始化钻孔步骤
+    // 初始化钻孔步骤（使用百分比坐标按容器实际尺寸渲染）
     const bowDrill = document.getElementById('bow-drill');
     const drillingTarget = document.getElementById('drilling-target');
     
@@ -1065,8 +1053,24 @@ function initDrillingStep() {
         drillingTarget.innerHTML = '';
         
         let drillCount = 0;
-        const markPositions = gameState.markPositions || [];
+        let markPositions = gameState.markPositions || [];
         const maxDrills = Math.min(markPositions.length, 6);
+        
+        // 将旧版像素坐标转换为百分比（兼容历史数据）
+        if (markPositions.length && markPositions[0].x !== undefined) {
+            const baseW = 400, baseH = 300; // 第三步画布默认尺寸
+            markPositions = markPositions.map(m => ({
+                px: m.x / baseW,
+                py: m.y / baseH,
+                id: m.id
+            }));
+            gameState.markPositions = markPositions;
+        }
+        
+        // 获取容器实际尺寸
+        const rect = drillingTarget.getBoundingClientRect();
+        const cw = rect.width;
+        const ch = rect.height;
         
         // 如果没有标记位置，使用默认位置
         if (markPositions.length === 0) {
@@ -1083,16 +1087,18 @@ function initDrillingStep() {
         markPositions.forEach((mark, i) => {
             if (i >= 6) return; // 最多6个钻孔点
             
+            const x = Math.max(0, Math.min(cw, (mark.px || 0.5) * cw));
+            const y = Math.max(0, Math.min(ch, (mark.py || 0.5) * ch));
+            
             const target = document.createElement('div');
-            // 直接使用标记坐标（与容器一致）
             target.style.cssText = `
                 position: absolute;
                 width: 40px;
                 height: 40px;
                 background: #FFD700;
                 border-radius: 50%;
-                left: ${mark.x - 20}px;
-                top: ${mark.y - 20}px;
+                left: ${x - 20}px;
+                top: ${y - 20}px;
                 cursor: pointer;
                 border: 3px solid #8B4513;
                 box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -1148,10 +1154,9 @@ function initDrillingStep() {
                             if (!gameState.drilledPositions) {
                                 gameState.drilledPositions = [];
                             }
-                            // 直接存储原始标记坐标（容器尺寸一致）
                             gameState.drilledPositions.push({
-                                x: mark.x,
-                                y: mark.y,
+                                px: mark.px,
+                                py: mark.py,
                                 id: mark.id
                             });
                             
@@ -1245,10 +1250,11 @@ function initForgingStep() {
                 createForgePoint(180 + i * 35, 140, i + 1);
             }
         } else {
-            // 使用实际标记坐标（已与容器尺寸一致），不再重复转换
+            // 使用实际标记位置，保持原始坐标
             showMessage(`在 ${actualForges} 个标记位置进行锻造塑形。`);
             for (let i = 0; i < actualForges; i++) {
                 const mark = markPositions[i];
+                // 直接使用标记的真实位置，不做任何调整
                 createForgePoint(mark.x, mark.y, mark.id);
             }
         }
@@ -1471,7 +1477,7 @@ function createSparks(forgePoint) {
 }
 
 function initInstallationStep() {
-    // 初始化安装步骤
+    // 初始化安装步骤（使用百分比坐标按容器实际尺寸渲染）
     const installHammer = document.getElementById('install-hammer');
     const vesselHoles = document.getElementById('vessel-holes');
     const staplesInventory = document.getElementById('staples-inventory');
@@ -1482,8 +1488,30 @@ function initInstallationStep() {
         vesselHoles.innerHTML = '';
         
         let installCount = 0;
-        const drilledPositions = gameState.drilledPositions || [];
+        let drilledPositions = gameState.drilledPositions || [];
         const maxInstalls = Math.max(drilledPositions.length, 3); // 使用实际钻孔数量
+        
+        // 兼容旧数据（像素坐标转百分比）
+        if (drilledPositions.length && drilledPositions[0].x !== undefined) {
+            const baseW = 400, baseH = 300;
+            drilledPositions = drilledPositions.map(p => ({
+                px: p.x / baseW,
+                py: p.y / baseH,
+                id: p.id
+            }));
+            gameState.drilledPositions = drilledPositions;
+        }
+        
+        // 容器实际尺寸
+        const rect = vesselHoles.getBoundingClientRect();
+        let cw = rect.width, ch = rect.height;
+        
+        // 监听窗口变化，实时更新 cw/ch（确保旋转/缩放后仍对齐）
+        const updateContainerSize = () => {
+            const r = vesselHoles.getBoundingClientRect();
+            cw = r.width; ch = r.height;
+        };
+        window.addEventListener('resize', updateContainerSize);
         
         // 创建锔钉库存 - 根据实际需要的数量，支持拖拽
         for (let i = 0; i < maxInstalls; i++) {
@@ -1689,7 +1717,9 @@ function initInstallationStep() {
             showMessage(`在 ${drilledPositions.length} 个钻孔位置安装锔钉。`);
             for (let i = 0; i < drilledPositions.length; i++) {
                 const pos = drilledPositions[i];
-                createInstallPoint(pos.x, pos.y, i);
+                const x = Math.max(0, Math.min(cw, (pos.px || 0.5) * cw));
+                const y = Math.max(0, Math.min(ch, (pos.py || 0.5) * ch));
+                createInstallPoint(x, y, i);
             }
         }
         
@@ -1788,19 +1818,6 @@ function initKintsugiStep() {
     // 初始化金缮步骤
     const canvas = document.getElementById('kintsugi-canvas');
     const ctx = canvas.getContext('2d');
-    
-    // 统一实际像素与CSS尺寸
-    if (isMobile) {
-        canvas.width = 300;
-        canvas.height = 200;
-        canvas.style.width = '300px';
-        canvas.style.height = '200px';
-    } else {
-        canvas.width = 400;
-        canvas.height = 300;
-        canvas.style.width = '400px';
-        canvas.style.height = '300px';
-    }
     const ingredients = document.querySelectorAll('.ingredient');
     const mixingBowl = document.getElementById('mixing-bowl');
     
