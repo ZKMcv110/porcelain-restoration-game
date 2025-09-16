@@ -880,29 +880,60 @@ function initMarkingStep() {
     const canvas = document.getElementById('marking-canvas');
     const ctx = canvas.getContext('2d');
     
+    // 检测移动设备
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     if (canvas && ctx) {
+        // 移动端优化
+        if (isMobile) {
+            canvas.style.touchAction = 'none';
+        }
+        
         let markCount = 0;
         const maxMarks = 6;
         const markPositions = []; // 存储标记位置
         
-        canvas.addEventListener('click', (e) => {
+        // 获取正确的坐标位置
+        function getEventPos(e) {
             const rect = canvas.getBoundingClientRect();
-            // 计算相对于canvas的精确坐标
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
+            let clientX, clientY;
+            
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            // 修复移动端坐标计算
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+        
+        function handleMark(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const pos = getEventPos(e);
             
             if (markCount < maxMarks) {
                 gameState.playSound('click');
                 
-                // 存储标记位置
-                markPositions.push({x: x, y: y, id: markCount + 1});
+                // 移动端触觉反馈
+                if (isMobile && navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
                 
-                // 绘制标记点 - 增大标记点
+                // 存储标记位置
+                markPositions.push({x: pos.x, y: pos.y, id: markCount + 1});
+                
+                // 绘制标记点 - 移动端增大标记点
                 ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
-                ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                ctx.arc(pos.x, pos.y, isMobile ? 12 : 8, 0, 2 * Math.PI);
                 ctx.fill();
                 
                 // 添加边框
@@ -912,9 +943,9 @@ function initMarkingStep() {
                 
                 // 添加编号
                 ctx.fillStyle = '#000';
-                ctx.font = 'bold 14px Arial';
+                ctx.font = isMobile ? 'bold 16px Arial' : 'bold 14px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(markCount + 1, x, y + 5);
+                ctx.fillText(markCount + 1, pos.x, pos.y + (isMobile ? 6 : 5));
                 
                 markCount++;
                 
@@ -926,7 +957,11 @@ function initMarkingStep() {
                     gameState.markPositions = markPositions;
                 }
             }
-        });
+        }
+        
+        // 添加事件监听器
+        canvas.addEventListener('click', handleMark);
+        canvas.addEventListener('touchstart', handleMark);
     }
 }
 
