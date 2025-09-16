@@ -979,6 +979,23 @@ body {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 15px;
     border: 2px dashed #FFD700;
+    touch-action: none;
+    user-select: none;
+}
+
+/* 抛光点样式优化 */
+.polishing-area > div {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+.polishing-area > div:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.polishing-area > div:active {
+    transform: scale(0.95) !important;
 }
 
 /* 最终展示样式 */
@@ -2088,6 +2105,30 @@ input:checked + .slider:before {
         width: 95vw;
         max-width: 350px;
         height: 250px;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* 移动端抛光点优化 */
+    .polishing-area > div {
+        min-width: 60px !important;
+        min-height: 60px !important;
+        font-size: 16px !important;
+        border-width: 3px !important;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3) !important;
+        -webkit-tap-highlight-color: rgba(255, 215, 0, 0.3);
+        touch-action: none;
+        user-select: none;
+    }
+    
+    .polishing-area > div:active {
+        transform: scale(0.9) !important;
+        background: rgba(255, 215, 0, 0.5) !important;
     }
     
     /* 控制按钮移动端优化 */
@@ -2275,6 +2316,14 @@ input:checked + .slider:before {
     #marking-canvas, #kintsugi-canvas, .drilling-target, .anvil-area, .vessel-with-holes, .completed-vessel, .polishing-area {
         max-width: 300px !important;
         height: 200px !important;
+    }
+    
+    /* 超小屏幕抛光点优化 */
+    .polishing-area > div {
+        min-width: 50px !important;
+        min-height: 50px !important;
+        font-size: 14px !important;
+        margin: 2px !important;
     }
     
     .wooden-box {

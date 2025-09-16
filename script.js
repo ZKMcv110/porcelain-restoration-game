@@ -2224,70 +2224,131 @@ function initFinishingStep() {
         let polishCount = 0;
         const maxPolish = 8;
         let isPolishing = false;
+        let currentPolishInterval = null;
         
-        // 创建抛光区域
+        // 移动端检测
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         ('ontouchstart' in window) || 
+                         (navigator.maxTouchPoints > 0);
+        
+        // 清空抛光区域
+        polishingArea.innerHTML = '';
+        
+        // 创建抛光区域 - 移动端优化
         for (let i = 0; i < maxPolish; i++) {
             const polishSpot = document.createElement('div');
+            
+            // 移动端使用更大的触摸区域
+            const spotSize = isMobile ? 60 : 40;
+            const spacing = isMobile ? 80 : 60;
+            const startX = isMobile ? 50 : 100;
+            const startY = isMobile ? 80 : 120;
+            
             polishSpot.style.cssText = `
                 position: absolute;
-                width: 40px;
-                height: 40px;
+                width: ${spotSize}px;
+                height: ${spotSize}px;
                 background: rgba(255, 255, 255, 0.3);
                 border-radius: 50%;
-                left: ${100 + (i % 4) * 60}px;
-                top: ${120 + Math.floor(i / 4) * 60}px;
+                left: ${startX + (i % 4) * spacing}px;
+                top: ${startY + Math.floor(i / 4) * spacing}px;
                 cursor: pointer;
                 border: 2px dashed #FFF;
                 transition: all 0.3s ease;
                 animation: pulse 2s infinite;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: ${isMobile ? '16px' : '14px'};
+                color: #FFD700;
+                font-weight: bold;
+                touch-action: none;
+                user-select: none;
+                z-index: 10;
             `;
             polishSpot.dataset.polished = 'false';
+            polishSpot.innerHTML = i + 1;
             
-            // 鼠标按下开始抛光
-            polishSpot.addEventListener('mousedown', (e) => {
+            // 统一的抛光处理函数
+            function startPolishing(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
                 if (polishSpot.dataset.polished === 'true') return;
+                
+                // 清除之前的定时器
+                if (currentPolishInterval) {
+                    clearInterval(currentPolishInterval);
+                }
                 
                 isPolishing = true;
                 let polishProgress = 0;
                 
-                const polishInterval = setInterval(() => {
+                // 移动端触觉反馈
+                if (navigator.vibrate && isMobile) {
+                    navigator.vibrate(30);
+                }
+                
+                gameState.playSound('brush');
+                showMessage(`正在抛光区域 ${i + 1}，请持续按住...`);
+                
+                currentPolishInterval = setInterval(() => {
                     if (isPolishing) {
-                        polishProgress += 5;
-                        polishSpot.style.background = `rgba(255, 215, 0, ${polishProgress/100})`;
+                        polishProgress += isMobile ? 8 : 5; // 移动端加快进度
+                        
+                        const alpha = Math.min(polishProgress / 100, 0.8);
+                        polishSpot.style.background = `rgba(255, 215, 0, ${alpha})`;
                         polishSpot.style.transform = `scale(${1 + polishProgress/200})`;
+                        polishSpot.innerHTML = `${Math.floor(polishProgress)}%`;
                         
                         // 播放抛光音效
-                        if (polishProgress % 20 === 0) {
+                        if (polishProgress % 25 === 0) {
                             gameState.playSound('brush');
+                        }
+                        
+                        // 移动端定期触觉反馈
+                        if (isMobile && polishProgress % 20 === 0 && navigator.vibrate) {
+                            navigator.vibrate(10);
                         }
                         
                         if (polishProgress >= 100) {
                             // 抛光完成
-                            polishSpot.style.background = 'rgba(255, 215, 0, 0.8)';
-                            polishSpot.style.border = '2px solid #FFD700';
+                            polishSpot.style.background = 'rgba(255, 215, 0, 0.9)';
+                            polishSpot.style.border = '3px solid #FFD700';
                             polishSpot.style.animation = 'none';
-                            polishSpot.style.boxShadow = '0 0 15px #FFD700';
+                            polishSpot.style.boxShadow = '0 0 20px #FFD700';
                             polishSpot.dataset.polished = 'true';
                             polishSpot.innerHTML = '✨';
-                            polishSpot.style.fontSize = '20px';
-                            polishSpot.style.textAlign = 'center';
-                            polishSpot.style.lineHeight = '36px';
+                            polishSpot.style.fontSize = isMobile ? '24px' : '20px';
+                            polishSpot.style.color = '#8B4513';
                             polishCount++;
                             
-                            clearInterval(polishInterval);
+                            clearInterval(currentPolishInterval);
+                            currentPolishInterval = null;
                             isPolishing = false;
+                            
+                            // 成功完成触觉反馈
+                            if (navigator.vibrate && isMobile) {
+                                navigator.vibrate([100, 50, 100]);
+                            }
                             
                             // 增加整体光泽效果
                             const brightness = 1 + (polishCount * 0.15);
                             completedVessel.style.filter = `brightness(${brightness}) contrast(1.3) saturate(1.2)`;
                             completedVessel.style.boxShadow = `0 0 ${polishCount * 5}px rgba(255, 215, 0, 0.6)`;
                             
-                            showMessage(`抛光进度：${polishCount}/${maxPolish} - 器物越来越光亮！`);
+                            showMessage(`✅ 区域 ${i + 1} 抛光完成！还需抛光 ${maxPolish - polishCount} 个区域`);
                             
                             if (polishCount >= maxPolish) {
                                 setTimeout(() => {
-                                    showMessage('抛光完成！器物焕然一新，金光闪闪！');
+                                    showMessage('🎉 所有区域抛光完成！器物焕然一新，金光闪闪！');
                                     completedVessel.style.animation = 'glow 2s infinite';
+                                    
+                                    // 最终完成的特殊触觉反馈
+                                    if (navigator.vibrate && isMobile) {
+                                        navigator.vibrate([200, 100, 200, 100, 200]);
+                                    }
+                                    
                                     setTimeout(() => {
                                         showFinalPresentation();
                                     }, 1000);
@@ -2295,27 +2356,85 @@ function initFinishingStep() {
                             }
                         }
                     }
-                }, 50);
+                }, isMobile ? 40 : 50); // 移动端更快的更新频率
+            }
+            
+            function stopPolishing(e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
                 
-                // 鼠标松开停止抛光
-                const stopPolishing = () => {
-                    clearInterval(polishInterval);
-                    isPolishing = false;
-                    if (polishSpot.dataset.polished === 'false') {
-                        polishSpot.style.transform = 'scale(1)';
-                        polishSpot.style.background = 'rgba(255, 255, 255, 0.3)';
-                        showMessage('需要持续按住来抛光这个区域！');
+                if (currentPolishInterval) {
+                    clearInterval(currentPolishInterval);
+                    currentPolishInterval = null;
+                }
+                
+                isPolishing = false;
+                
+                if (polishSpot.dataset.polished === 'false') {
+                    polishSpot.style.transform = 'scale(1)';
+                    polishSpot.style.background = 'rgba(255, 255, 255, 0.3)';
+                    polishSpot.innerHTML = i + 1;
+                    
+                    if (isMobile) {
+                        showMessage(`❌ 区域 ${i + 1} 抛光中断！请长按持续抛光`);
+                        if (navigator.vibrate) {
+                            navigator.vibrate([50, 30, 50]);
+                        }
+                    } else {
+                        showMessage(`需要持续按住来抛光区域 ${i + 1}！`);
                     }
-                };
-                
-                polishSpot.addEventListener('mouseup', stopPolishing);
-                polishSpot.addEventListener('mouseleave', stopPolishing);
-            }); // 这里有多余的 });
+                }
+            }
+            
+            // 鼠标事件（桌面端）
+            polishSpot.addEventListener('mousedown', startPolishing);
+            polishSpot.addEventListener('mouseup', stopPolishing);
+            polishSpot.addEventListener('mouseleave', stopPolishing);
+            
+            // 触摸事件（移动端）- 完整支持
+            polishSpot.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                startPolishing(e);
+            }, { passive: false });
+            
+            polishSpot.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                stopPolishing(e);
+            }, { passive: false });
+            
+            polishSpot.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                stopPolishing(e);
+            }, { passive: false });
+            
+            // 防止触摸时的默认行为
+            polishSpot.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, { passive: false });
             
             polishingArea.appendChild(polishSpot);
         }
         
-        showMessage('用软布仔细抛光每个区域，让器物重现光泽！');
+        // 防止页面滚动干扰抛光操作
+        polishingArea.addEventListener('touchstart', (e) => {
+            document.body.style.overflow = 'hidden';
+        });
+        
+        polishingArea.addEventListener('touchend', (e) => {
+            document.body.style.overflow = '';
+        });
+        
+        if (isMobile) {
+            showMessage('📱 移动端优化：长按抛光区域进行抛光，已优化触摸体验！');
+        } else {
+            showMessage('用软布仔细抛光每个区域，让器物重现光泽！');
+        }
     }
 }
 
