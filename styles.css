@@ -5,6 +5,28 @@
     box-sizing: border-box;
 }
 
+/* 清洗步骤容器裁切，防止图片溢出 */
+.assembly-area {
+    overflow: hidden;
+}
+
+/* 清洗步骤器物样式，确保不超框且等比显示 */
+.cracked-vessel {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border-radius: 15px;
+}
+
+/* 移动端进一步收紧清洗区域内图像显示 */
+@media (max-width: 480px) {
+    .cracked-vessel {
+        width: 150px !important;
+        height: 150px !important;
+    }
+}
+
 /* 开场剧情样式 */
 #story-intro {
     position: relative;

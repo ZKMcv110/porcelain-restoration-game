@@ -956,11 +956,18 @@ function initMarkingStep() {
     // 初始化标记步骤
     const canvas = document.getElementById('marking-canvas');
     const ctx = canvas.getContext('2d');
-    
-    // 移动端canvas尺寸适配
+
+    // 统一实际像素与CSS尺寸，避免点击偏移
     if (isMobile) {
         canvas.width = 300;
         canvas.height = 200;
+        canvas.style.width = '300px';
+        canvas.style.height = '200px';
+    } else {
+        canvas.width = 400;
+        canvas.height = 300;
+        canvas.style.width = '400px';
+        canvas.style.height = '300px';
     }
     
     // 检测移动设备
@@ -1077,20 +1084,15 @@ function initDrillingStep() {
             if (i >= 6) return; // 最多6个钻孔点
             
             const target = document.createElement('div');
-            // 坐标转换：从canvas坐标转换到drilling-target坐标
-            const scaleX = isMobile ? 300 / 300 : 400 / 400; // 保持1:1比例
-            const scaleY = isMobile ? 200 / 200 : 300 / 300; // 保持1:1比例
-            const adjustedX = mark.x * scaleX;
-            const adjustedY = mark.y * scaleY;
-            
+            // 直接使用标记坐标（与容器一致）
             target.style.cssText = `
                 position: absolute;
                 width: 40px;
                 height: 40px;
                 background: #FFD700;
                 border-radius: 50%;
-                left: ${adjustedX - 20}px;
-                top: ${adjustedY - 20}px;
+                left: ${mark.x - 20}px;
+                top: ${mark.y - 20}px;
                 cursor: pointer;
                 border: 3px solid #8B4513;
                 box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -1146,12 +1148,10 @@ function initDrillingStep() {
                             if (!gameState.drilledPositions) {
                                 gameState.drilledPositions = [];
                             }
-                            // 存储转换后的坐标
-                            const scaleX = isMobile ? 300 / 300 : 400 / 400;
-                            const scaleY = isMobile ? 200 / 200 : 300 / 300;
+                            // 直接存储原始标记坐标（容器尺寸一致）
                             gameState.drilledPositions.push({
-                                x: mark.x * scaleX,
-                                y: mark.y * scaleY,
+                                x: mark.x,
+                                y: mark.y,
                                 id: mark.id
                             });
                             
@@ -1245,16 +1245,11 @@ function initForgingStep() {
                 createForgePoint(180 + i * 35, 140, i + 1);
             }
         } else {
-            // 使用实际标记位置，根据容器尺寸进行坐标转换
+            // 使用实际标记坐标（已与容器尺寸一致），不再重复转换
             showMessage(`在 ${actualForges} 个标记位置进行锻造塑形。`);
             for (let i = 0; i < actualForges; i++) {
                 const mark = markPositions[i];
-                // 坐标转换：从canvas坐标转换到anvil-area坐标
-                const scaleX = isMobile ? 300 / 300 : 400 / 400; // 保持1:1比例
-                const scaleY = isMobile ? 200 / 200 : 300 / 300; // 保持1:1比例
-                const adjustedX = mark.x * scaleX;
-                const adjustedY = mark.y * scaleY;
-                createForgePoint(adjustedX, adjustedY, mark.id);
+                createForgePoint(mark.x, mark.y, mark.id);
             }
         }
         
@@ -1794,10 +1789,17 @@ function initKintsugiStep() {
     const canvas = document.getElementById('kintsugi-canvas');
     const ctx = canvas.getContext('2d');
     
-    // 移动端canvas尺寸适配
+    // 统一实际像素与CSS尺寸
     if (isMobile) {
         canvas.width = 300;
         canvas.height = 200;
+        canvas.style.width = '300px';
+        canvas.style.height = '200px';
+    } else {
+        canvas.width = 400;
+        canvas.height = 300;
+        canvas.style.width = '400px';
+        canvas.style.height = '300px';
     }
     const ingredients = document.querySelectorAll('.ingredient');
     const mixingBowl = document.getElementById('mixing-bowl');
