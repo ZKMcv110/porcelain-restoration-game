@@ -128,18 +128,34 @@ body {
     z-index: 100;
 }
 
-.back-btn {
+.header-left {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.back-btn, .restart-btn {
     padding: 10px 20px;
     background: #8B4513;
     color: #FFD700;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    font-size: 14px;
 }
 
-.back-btn:hover {
+.back-btn:hover, .restart-btn:hover {
     background: #A0522D;
+    transform: translateY(-1px);
+}
+
+.restart-btn {
+    background: #B8860B;
+}
+
+.restart-btn:hover {
+    background: #DAA520;
 }
 
 #step-title {
@@ -470,12 +486,13 @@ body {
 }
 
 #marking-canvas {
+    width: 400px;
+    height: 300px;
     border-radius: 10px;
     border: 3px solid #8B4513;
     background: url('images/repaired.jpg') center/contain no-repeat;
     cursor: crosshair;
-    max-width: 90%;
-    max-height: 70vh;
+    touch-action: manipulation;
 }
 
 .instruction {
@@ -527,10 +544,11 @@ body {
 .drilling-target {
     width: 400px;
     height: 300px;
-    background: url('images/background.jpg') center/cover no-repeat;
+    background: url('images/repaired.jpg') center/contain no-repeat;
     border-radius: 10px;
     position: relative;
     border: 3px solid #8B4513;
+    touch-action: manipulation;
 }
 
 /* 第五步样式 */
@@ -542,12 +560,16 @@ body {
 }
 
 .anvil-area {
-    width: 500px;
+    width: 400px;
     height: 300px;
-    background: linear-gradient(145deg, #696969, #808080);
-    border-radius: 20px;
+    background-image: url('images/repaired.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: rgba(105, 105, 105, 0.2);
+    border-radius: 10px;
     position: relative;
-    border: 5px solid #2F4F4F;
+    border: 3px solid #8B4513;
 }
 
 .metal-strip {
@@ -566,6 +588,8 @@ body {
     font-size: 3em;
     cursor: pointer;
     transition: transform 0.2s ease;
+    touch-action: none;
+    user-select: none;
 }
 
 .hammer:hover {
@@ -575,17 +599,18 @@ body {
 /* 第六步样式 */
 .installation-workspace {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
+    gap: 30px;
     width: 100%;
     max-width: 800px;
 }
 
 .vessel-with-holes {
-    flex: 2;
+    width: 400px;
     height: 300px;
-    background: url('images/background.jpg') center/cover no-repeat;
-    border-radius: 15px;
+    background: url('images/repaired.jpg') center/contain no-repeat;
+    border-radius: 10px;
     position: relative;
     border: 3px solid #8B4513;
 }
@@ -619,6 +644,83 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 30px;
+}
+
+/* 笔刷控制器样式 */
+.brush-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(139, 69, 19, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid #8B4513;
+    margin: 10px 0;
+}
+
+.brush-controls label {
+    font-weight: bold;
+    color: #8B4513;
+    font-size: 14px;
+}
+
+.brush-controls input[type="range"] {
+    width: 120px;
+    height: 6px;
+    background: rgba(139, 69, 19, 0.3);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+.brush-controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #FFD700;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid #8B4513;
+}
+
+.brush-controls input[type="range"]::-webkit-slider-thumb:hover {
+    background: #FFA500;
+    transform: scale(1.1);
+}
+
+.brush-controls input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #FFD700;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #8B4513;
+    transition: all 0.3s ease;
+}
+
+.brush-controls input[type="range"]::-moz-range-thumb:hover {
+    background: #FFA500;
+    transform: scale(1.1);
+}
+
+.brush-controls input[type="range"]::-moz-range-track {
+    height: 6px;
+    background: rgba(139, 69, 19, 0.3);
+    border-radius: 3px;
+    border: none;
+}
+
+#brush-size-display {
+    font-weight: bold;
+    color: #FFD700;
+    background: #8B4513;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    min-width: 35px;
+    text-align: center;
 }
 
 .mixing-area {
@@ -669,12 +771,12 @@ body {
 }
 
 #kintsugi-canvas {
+    width: 400px;
+    height: 300px;
     border-radius: 10px;
     border: 3px solid #8B4513;
     background: url('images/repaired.jpg') center/contain no-repeat;
     cursor: crosshair;
-    max-width: 90%;
-    max-height: 70vh;
 }
 
 /* 第八步样式 */
@@ -686,10 +788,10 @@ body {
 }
 
 .completed-vessel {
-    width: 200px;
-    height: 200px;
-    background: url('images/damaged.jpg') center/cover no-repeat;
-    border-radius: 15px;
+    width: 400px;
+    height: 300px;
+    background: url('images/repaired.jpg') center/contain no-repeat;
+    border-radius: 10px;
     transition: all 0.5s ease;
     border: 3px solid #8B4513;
 }
@@ -833,9 +935,10 @@ body {
 /* 消息提示样式 */
 .message-container {
     position: fixed;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 20px;
+    right: 50%;
+    transform: translateX(50%);
+    width: 350px;
     z-index: 1000;
     pointer-events: none;
 }
@@ -1319,51 +1422,758 @@ input:checked + .slider:before {
     to { opacity: 1; }
 }
 
-/* 响应式设计 */
+/* 音乐控制器样式 */
+.music-controller {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 25px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.music-controller:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 215, 0, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.music-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    color: #FFD700;
+}
+
+.music-btn:hover {
+    background: rgba(255, 215, 0, 0.2);
+    transform: scale(1.1);
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.volume-btn {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    color: #FFD700;
+}
+
+.volume-btn:hover {
+    background: rgba(255, 215, 0, 0.2);
+    transform: scale(1.1);
+}
+
+.volume-slider {
+    width: 80px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #FFD700;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    background: #FFA500;
+    transform: scale(1.2);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #FFD700;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+    background: #FFA500;
+    transform: scale(1.2);
+}
+
+/* 设置页面音量控制样式 */
+.setting-controls input[type="range"] {
+    width: 150px;
+    height: 6px;
+    background: rgba(139, 69, 19, 0.3);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+.setting-controls input[type="range"]::-webkit-slider-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(139, 69, 19, 0.3);
+    border-radius: 3px;
+}
+
+.setting-controls input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(139, 69, 19, 0.3);
+    border-radius: 3px;
+    border: none;
+}
+
+.setting-controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #8B4513;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.setting-controls input[type="range"]::-webkit-slider-thumb:hover {
+    background: #A0522D;
+    transform: scale(1.1);
+}
+
+.setting-controls input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #8B4513;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.setting-controls input[type="range"]::-moz-range-thumb:hover {
+    background: #A0522D;
+    transform: scale(1.1);
+}
+
+#volume-display {
+    min-width: 40px;
+    color: #8B4513;
+    font-weight: bold;
+}
+
+/* 移动端响应式设计 - 全面优化 */
 @media (max-width: 768px) {
+    /* 基础布局优化 */
+    body {
+        overflow-x: hidden;
+        font-size: 14px;
+    }
+    
+    /* 主菜单移动端优化 */
     .game-title {
-        font-size: 2em;
+        font-size: 2.2em;
+        margin-bottom: 15px;
+    }
+    
+    .game-subtitle {
+        font-size: 1em;
+        margin-bottom: 25px;
     }
     
     .menu-content {
-        padding: 20px;
+        padding: 25px 15px;
+        margin: 10px;
+        max-width: 90vw;
     }
     
+    .menu-buttons {
+        gap: 12px;
+    }
+    
+    .menu-btn {
+        padding: 12px 20px;
+        font-size: 1em;
+        min-height: 48px; /* 确保触摸友好 */
+    }
+    
+    /* 游戏头部移动端优化 */
     .game-header {
-        flex-direction: column;
-        gap: 10px;
-        padding: 15px;
+        height: 70px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 10px;
+        gap: 8px;
+    }
+    
+    .header-left {
+        flex: 1;
+        gap: 8px;
+    }
+    
+    .back-btn, .restart-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-height: 36px;
+    }
+    
+    #step-title {
+        font-size: 1.1em;
+        text-align: center;
+        flex: 1;
+        min-width: 100%;
+        order: 1;
+        margin-top: 5px;
     }
     
     .progress-container {
-        order: -1;
+        flex: 1;
+        justify-content: flex-end;
     }
     
-    .step-controls {
-        bottom: 10px;
-        gap: 10px;
+    .progress-bar {
+        width: 120px;
+        height: 8px;
     }
     
-    .control-btn {
-        padding: 10px 20px;
+    .progress-text {
         font-size: 0.9em;
     }
     
-    .gallery-grid {
-        grid-template-columns: 1fr;
+    /* 步骤内容移动端优化 */
+    .step-content {
+        top: 70px;
+        bottom: 70px;
+        padding: 15px 10px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* 步骤介绍移动端优化 */
+    .intro-overlay {
+        padding: 25px 15px;
+        margin: 10px;
+        max-width: 90vw;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .intro-content h3 {
+        font-size: 1.6em;
+        margin-bottom: 15px;
+    }
+    
+    .intro-description {
+        font-size: 1em;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+    
+    .start-step-btn {
+        padding: 12px 25px;
+        font-size: 1.1em;
+        min-height: 48px;
+    }
+    
+    /* 第一步移动端优化 */
+    .story-container {
         gap: 20px;
         padding: 10px;
     }
     
-    .tutorial-content, .settings-content, .gallery-content {
+    .wooden-box {
+        width: 250px;
+        height: 160px;
+    }
+    
+    .story-text {
+        max-width: 95vw;
+        padding: 20px 15px;
+        font-size: 1em;
+        line-height: 1.6;
+    }
+    
+    /* 第二步移动端优化 */
+    .cleaning-workspace {
+        gap: 20px;
         padding: 10px;
     }
     
-    .tutorial-content h2, .settings-content h2, .gallery-content h2 {
-        font-size: 2em;
+    .tool-panel {
+        padding: 15px;
+        width: 100%;
+        max-width: 350px;
     }
     
-    .tutorial-section, .setting-item, .gallery-item {
+    .tool-btn {
+        padding: 12px 16px;
+        margin: 5px;
+        font-size: 0.9em;
+        min-height: 44px;
+        display: inline-block;
+    }
+    
+    .pieces-container {
+        width: 100%;
+        max-width: 350px;
         padding: 15px;
+        min-height: 120px;
+    }
+    
+    .assembly-area {
+        width: 100%;
+        max-width: 350px;
+        height: 200px;
+        padding: 15px;
+    }
+    
+    .assembly-area p {
+        font-size: 1em;
+    }
+    
+    /* 第三步移动端优化 */
+    .marking-workspace {
+        gap: 15px;
+        padding: 10px;
+    }
+    
+    #marking-canvas {
+        width: 95vw !important;
+        max-width: 350px !important;
+        height: 250px !important;
+        touch-action: manipulation;
+    }
+    
+    /* 第四步移动端优化 */
+    .drilling-workspace {
+        gap: 20px;
+        padding: 10px;
+    }
+    
+    .bow-drill {
+        width: 150px;
+        height: 80px;
+    }
+    
+    .drilling-target {
+        width: 95vw;
+        max-width: 350px;
+        height: 250px;
+        touch-action: manipulation;
+    }
+    
+    .drilling-target > div {
+        min-width: 50px !important;
+        min-height: 50px !important;
+        font-size: 16px !important;
+        border-width: 3px !important;
+    }
+    
+    /* 第五步移动端优化 */
+    .forging-workspace {
+        gap: 20px;
+        padding: 10px;
+    }
+    
+    .anvil-area {
+        width: 95vw;
+        max-width: 350px;
+        height: 250px;
+    }
+    
+    .hammer {
+        font-size: 2.5em;
+        position: fixed !important;
+        z-index: 1000;
+        touch-action: none;
+    }
+    
+    /* 第六步移动端优化 */
+    .installation-workspace {
+        gap: 20px;
+        padding: 10px;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .vessel-with-holes {
+        width: 95vw;
+        max-width: 350px;
+        height: 250px;
+    }
+    
+    .staples-inventory {
+        width: 100%;
+        max-width: 350px;
+        padding: 15px;
+    }
+    
+    /* 第七步移动端优化 */
+    .kintsugi-workspace {
+        gap: 15px;
+        padding: 10px;
+    }
+    
+    .mixing-area {
+        padding: 15px;
+        width: 100%;
+        max-width: 350px;
+    }
+    
+    .mixing-area h4 {
+        font-size: 1.1em;
+        margin-bottom: 12px;
+    }
+    
+    .ingredients {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .ingredient {
+        padding: 12px 15px;
+        font-size: 0.9em;
+        min-height: 44px;
+        flex: 1;
+        min-width: 80px;
+        text-align: center;
+    }
+    
+    .mixing-bowl {
+        width: 60px;
+        height: 60px;
+    }
+    
+    #kintsugi-canvas {
+        width: 95vw !important;
+        max-width: 350px !important;
+        height: 250px !important;
+        touch-action: none;
+    }
+    
+    .brush-controls {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        justify-content: center;
+    }
+    
+    .brush-controls label {
+        font-size: 13px;
+    }
+    
+    .brush-controls input[type="range"] {
+        width: 100px;
+    }
+    
+    #brush-size-display {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+    
+    /* 第八步移动端优化 */
+    .polishing-workspace {
+        gap: 20px;
+        padding: 10px;
+    }
+    
+    .completed-vessel {
+        width: 95vw;
+        max-width: 350px;
+        height: 250px;
+    }
+    
+    .polishing-area {
+        width: 95vw;
+        max-width: 350px;
+        height: 250px;
+    }
+    
+    /* 控制按钮移动端优化 */
+    .step-controls {
+        height: 70px;
+        padding: 10px;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .control-btn {
+        padding: 10px 15px;
+        font-size: 0.9em;
+        min-height: 44px;
+        flex: 1;
+        max-width: 120px;
+    }
+    
+    /* 消息提示移动端优化 */
+    .message-container {
+        top: 80px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        transform: none;
+    }
+    
+    .message {
+        padding: 12px 15px;
+        font-size: 0.9em;
+        margin-bottom: 8px;
+        border-radius: 8px;
+    }
+    
+    /* 最终展示移动端优化 */
+    .presentation-content {
+        padding: 20px 15px;
+        margin: 10px;
+        max-width: 95vw;
+        max-height: 90vh;
+    }
+    
+    .presentation-content h2 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .artifact-image {
+        width: 100%;
+        max-width: 250px;
+        height: 200px;
+    }
+    
+    .gallery-item h4 {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+    
+    /* 音乐控制器移动端优化 */
+    .music-controller {
+        bottom: 80px;
+        right: 10px;
+        padding: 8px 10px;
+        border-radius: 20px;
+    }
+    
+    .music-btn {
+        font-size: 1.3em;
+        padding: 4px;
+    }
+    
+    .volume-btn {
+        font-size: 1.1em;
+        padding: 2px;
+    }
+    
+    .volume-slider {
+        width: 50px;
+        height: 3px;
+    }
+    
+    /* 通用指令文本移动端优化 */
+    .instruction {
+        font-size: 0.9em;
+        padding: 8px 15px;
+        margin: 10px;
+        text-align: center;
+        line-height: 1.4;
+    }
+    
+    /* 工具面板移动端优化 */
+    .tool-panel h4 {
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+    
+    /* 画布通用移动端优化 */
+    canvas {
+        border-width: 2px !important;
+        border-radius: 8px !important;
+    }
+    
+    /* 触摸优化 */
+    button, .tool-btn, .ingredient, .menu-btn, .control-btn {
+        -webkit-tap-highlight-color: rgba(255, 215, 0, 0.3);
+        touch-action: manipulation;
+    }
+    
+    /* 防止缩放 */
+    .step-content, .intro-overlay {
+        touch-action: pan-y;
+    }
+    
+    /* 滚动条优化 */
+    .step-content::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .step-content::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .step-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 215, 0, 0.5);
+        border-radius: 2px;
+    }
+}
+
+/* 超小屏幕优化 (手机竖屏) */
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 1.8em;
+    }
+    
+    .menu-content {
+        padding: 20px 10px;
+    }
+    
+    .game-header {
+        height: 60px;
+        padding: 8px;
+    }
+    
+    #step-title {
+        font-size: 1em;
+    }
+    
+    .step-content {
+        top: 60px;
+        bottom: 60px;
+        padding: 10px 5px;
+    }
+    
+    .step-controls {
+        height: 60px;
+        padding: 8px;
+    }
+    
+    .control-btn {
+        padding: 8px 12px;
+        font-size: 0.8em;
+        min-height: 40px;
+    }
+    
+    .intro-overlay {
+        padding: 20px 10px;
+    }
+    
+    .intro-content h3 {
+        font-size: 1.4em;
+    }
+    
+    .intro-description {
+        font-size: 0.9em;
+    }
+    
+    /* 画布进一步缩小 */
+    #marking-canvas, #kintsugi-canvas, .drilling-target, .anvil-area, .vessel-with-holes, .completed-vessel, .polishing-area {
+        max-width: 300px !important;
+        height: 200px !important;
+    }
+    
+    .wooden-box {
+        width: 200px;
+        height: 130px;
+    }
+    
+    .assembly-area {
+        height: 150px;
+    }
+    
+    .message {
+        font-size: 0.8em;
+        padding: 10px 12px;
+    }
+    
+    .music-controller {
+        bottom: 70px;
+        right: 5px;
+        padding: 6px 8px;
+    }
+    
+    .volume-slider {
+        width: 40px;
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .game-header {
+        height: 50px;
+        padding: 5px 10px;
+    }
+    
+    #step-title {
+        font-size: 0.9em;
+    }
+    
+    .step-content {
+        top: 50px;
+        bottom: 50px;
+    }
+    
+    .step-controls {
+        height: 50px;
+        padding: 5px;
+    }
+    
+    .control-btn {
+        padding: 6px 10px;
+        font-size: 0.8em;
+        min-height: 36px;
+    }
+    
+    .intro-overlay {
+        padding: 15px 10px;
+        max-height: 85vh;
+    }
+    
+    .intro-content h3 {
+        font-size: 1.3em;
+        margin-bottom: 10px;
+    }
+    
+    .intro-description {
+        font-size: 0.9em;
+        margin-bottom: 15px;
+    }
+    
+    .start-step-btn {
+        padding: 8px 20px;
+        font-size: 1em;
+    }
+    
+    .music-controller {
+        bottom: 60px;
     }
 }
