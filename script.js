@@ -963,9 +963,6 @@ function initMarkingStep() {
         canvas.height = 200;
     }
     
-    // 检测移动设备
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
     if (canvas && ctx) {
         // 移动端优化
         if (isMobile) {
@@ -1038,6 +1035,7 @@ function initMarkingStep() {
                     
                     // 将标记位置存储到gameState中供下一步使用
                     gameState.markPositions = markPositions;
+                    console.log('标记位置已保存:', markPositions); // 调试信息
                 }
             }
         }
@@ -1061,8 +1059,11 @@ function initDrillingStep() {
         const markPositions = gameState.markPositions || [];
         const maxDrills = Math.min(markPositions.length, 6);
         
+        console.log('钻孔步骤获取到的标记位置:', markPositions); // 调试信息
+        
         // 如果没有标记位置，使用默认位置
         if (markPositions.length === 0) {
+            console.log('未找到标记位置，使用默认位置'); // 调试信息
             for (let i = 0; i < 3; i++) {
                 markPositions.push({
                     x: 150 + i * 80,
@@ -1077,14 +1078,18 @@ function initDrillingStep() {
             if (i >= 6) return; // 最多6个钻孔点
             
             const target = document.createElement('div');
+            // 移动端调整钻孔点大小和位置
+            const pointSize = isMobile ? 35 : 40;
+            const halfSize = pointSize / 2;
+            
             target.style.cssText = `
                 position: absolute;
-                width: 40px;
-                height: 40px;
+                width: ${pointSize}px;
+                height: ${pointSize}px;
                 background: #FFD700;
                 border-radius: 50%;
-                left: ${mark.x - 20}px;
-                top: ${mark.y - 20}px;
+                left: ${mark.x - halfSize}px;
+                top: ${mark.y - halfSize}px;
                 cursor: pointer;
                 border: 3px solid #8B4513;
                 box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -1093,7 +1098,8 @@ function initDrillingStep() {
                 justify-content: center;
                 font-weight: bold;
                 color: #8B4513;
-                font-size: 14px;
+                font-size: ${isMobile ? '12px' : '14px'};
+                z-index: 10;
             `;
             target.textContent = mark.id;
             target.dataset.drilled = 'false';
