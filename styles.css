@@ -40,9 +40,9 @@
         rgba(0, 0, 0, 0.8) 100%
     );
     display: flex;
-    align-items: flex-end;
+    align-items: center; /* 改为居中对齐 */
+    justify-content: center;
     padding: 40px;
-    padding-bottom: 180px; /* 增加更多空间避免被音乐控制器遮挡 */
 }
 
 .story-content {
@@ -55,10 +55,12 @@
     background: rgba(0, 0, 0, 0.85);
     border-radius: 15px;
     padding: 30px;
+    padding-bottom: 60px; /* 为内部三角形按钮留出空间 */
     margin-bottom: 20px;
     border: 2px solid rgba(255, 215, 0, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
+    position: relative; /* 为绝对定位的三角形提供参考 */
 }
 
 .story-dialogue {
@@ -84,6 +86,9 @@
 }
 
 .story-controls {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -133,7 +138,6 @@
 @media (max-width: 768px) {
     .story-overlay {
         padding: 20px;
-        padding-bottom: 160px; /* 增加移动端音乐控制器空间 */
     }
     
     .story-text-container {
@@ -160,7 +164,6 @@
 @media (max-width: 480px) {
     .story-overlay {
         padding: 15px;
-        padding-bottom: 140px; /* 增加小屏幕设备音乐控制器空间 */
     }
     
     .story-text-container {
@@ -2423,6 +2426,21 @@ input:checked + .slider:before {
         line-height: 1.6 !important;
         border-radius: 10px !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* 故事控制按钮移动端优化 */
+    .story-controls {
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .next-button {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .triangle {
+        font-size: 1.2em;
     }
     
     /* 触摸反馈优化 */
