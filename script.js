@@ -953,7 +953,7 @@ function addDragEvents(element) {
 }
 
 function initMarkingStep() {
-    // 初始化标记步骤（将坐标以百分比保存，便于后续自适应）
+    // 初始化标记步骤
     const canvas = document.getElementById('marking-canvas');
     const ctx = canvas.getContext('2d');
     
@@ -968,7 +968,7 @@ function initMarkingStep() {
         
         let markCount = 0;
         const maxMarks = 6;
-        const markPositions = []; // 存储标记位置（百分比坐标 px, py）
+        const markPositions = []; // 存储标记位置
         
         // 获取正确的坐标位置
         function getEventPos(e) {
@@ -984,9 +984,10 @@ function initMarkingStep() {
             }
             
             // 修复移动端坐标计算
-            const x = (clientX - rect.left) * (canvas.width / rect.width);
-            const y = (clientY - rect.top) * (canvas.height / rect.height);
-            return { x, y };
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
         }
         
         function handleMark(e) {
@@ -1003,10 +1004,8 @@ function initMarkingStep() {
                     navigator.vibrate(50);
                 }
                 
-                // 以百分比方式保存，后续步骤按容器尺寸换算
-                const px = pos.x / canvas.width;
-                const py = pos.y / canvas.height;
-                markPositions.push({ px, py, id: markCount + 1 });
+                // 存储标记位置
+                markPositions.push({x: pos.x, y: pos.y, id: markCount + 1});
                 
                 // 绘制标记点 - 移动端增大标记点
                 ctx.fillStyle = '#FFD700';
@@ -1031,7 +1030,7 @@ function initMarkingStep() {
                     showMessage('标记完成！所有钻孔位置已确定。');
                     document.getElementById('complete-btn').style.display = 'inline-block';
                     
-                    // 存储百分比坐标
+                    // 将标记位置存储到gameState中供下一步使用
                     gameState.markPositions = markPositions;
                 }
             }
@@ -1044,7 +1043,7 @@ function initMarkingStep() {
 }
 
 function initDrillingStep() {
-    // 初始化钻孔步骤（使用百分比坐标按容器实际尺寸渲染）
+    // 初始化钻孔步骤
     const bowDrill = document.getElementById('bow-drill');
     const drillingTarget = document.getElementById('drilling-target');
     
@@ -1053,24 +1052,8 @@ function initDrillingStep() {
         drillingTarget.innerHTML = '';
         
         let drillCount = 0;
-        let markPositions = gameState.markPositions || [];
+        const markPositions = gameState.markPositions || [];
         const maxDrills = Math.min(markPositions.length, 6);
-        
-        // 将旧版像素坐标转换为百分比（兼容历史数据）
-        if (markPositions.length && markPositions[0].x !== undefined) {
-            const baseW = 400, baseH = 300; // 第三步画布默认尺寸
-            markPositions = markPositions.map(m => ({
-                px: m.x / baseW,
-                py: m.y / baseH,
-                id: m.id
-            }));
-            gameState.markPositions = markPositions;
-        }
-        
-        // 获取容器实际尺寸
-        const rect = drillingTarget.getBoundingClientRect();
-        const cw = rect.width;
-        const ch = rect.height;
         
         // 如果没有标记位置，使用默认位置
         if (markPositions.length === 0) {
@@ -1087,9 +1070,6 @@ function initDrillingStep() {
         markPositions.forEach((mark, i) => {
             if (i >= 6) return; // 最多6个钻孔点
             
-            const x = Math.max(0, Math.min(cw, (mark.px || 0.5) * cw));
-            const y = Math.max(0, Math.min(ch, (mark.py || 0.5) * ch));
-            
             const target = document.createElement('div');
             target.style.cssText = `
                 position: absolute;
@@ -1097,8 +1077,8 @@ function initDrillingStep() {
                 height: 40px;
                 background: #FFD700;
                 border-radius: 50%;
-                left: ${x - 20}px;
-                top: ${y - 20}px;
+                left: ${mark.x - 20}px;
+                top: ${mark.y - 20}px;
                 cursor: pointer;
                 border: 3px solid #8B4513;
                 box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -1155,8 +1135,8 @@ function initDrillingStep() {
                                 gameState.drilledPositions = [];
                             }
                             gameState.drilledPositions.push({
-                                px: mark.px,
-                                py: mark.py,
+                                x: mark.x,
+                                y: mark.y,
                                 id: mark.id
                             });
                             
@@ -1477,7 +1457,7 @@ function createSparks(forgePoint) {
 }
 
 function initInstallationStep() {
-    // 初始化安装步骤（使用百分比坐标按容器实际尺寸渲染）
+    // 初始化安装步骤
     const installHammer = document.getElementById('install-hammer');
     const vesselHoles = document.getElementById('vessel-holes');
     const staplesInventory = document.getElementById('staples-inventory');
@@ -1488,30 +1468,8 @@ function initInstallationStep() {
         vesselHoles.innerHTML = '';
         
         let installCount = 0;
-        let drilledPositions = gameState.drilledPositions || [];
+        const drilledPositions = gameState.drilledPositions || [];
         const maxInstalls = Math.max(drilledPositions.length, 3); // 使用实际钻孔数量
-        
-        // 兼容旧数据（像素坐标转百分比）
-        if (drilledPositions.length && drilledPositions[0].x !== undefined) {
-            const baseW = 400, baseH = 300;
-            drilledPositions = drilledPositions.map(p => ({
-                px: p.x / baseW,
-                py: p.y / baseH,
-                id: p.id
-            }));
-            gameState.drilledPositions = drilledPositions;
-        }
-        
-        // 容器实际尺寸
-        const rect = vesselHoles.getBoundingClientRect();
-        let cw = rect.width, ch = rect.height;
-        
-        // 监听窗口变化，实时更新 cw/ch（确保旋转/缩放后仍对齐）
-        const updateContainerSize = () => {
-            const r = vesselHoles.getBoundingClientRect();
-            cw = r.width; ch = r.height;
-        };
-        window.addEventListener('resize', updateContainerSize);
         
         // 创建锔钉库存 - 根据实际需要的数量，支持拖拽
         for (let i = 0; i < maxInstalls; i++) {
@@ -1717,9 +1675,7 @@ function initInstallationStep() {
             showMessage(`在 ${drilledPositions.length} 个钻孔位置安装锔钉。`);
             for (let i = 0; i < drilledPositions.length; i++) {
                 const pos = drilledPositions[i];
-                const x = Math.max(0, Math.min(cw, (pos.px || 0.5) * cw));
-                const y = Math.max(0, Math.min(ch, (pos.py || 0.5) * ch));
-                createInstallPoint(x, y, i);
+                createInstallPoint(pos.x, pos.y, i);
             }
         }
         

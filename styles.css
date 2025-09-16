@@ -645,8 +645,6 @@ body {
     transition: all 0.3s ease;
     flex-wrap: wrap;
     padding: 20px;
-    position: relative;            /* 容器作为定位基准 */
-    overflow: hidden;              /* 防止内容溢出 */
 }
 
 .assembly-area p {
@@ -727,7 +725,6 @@ body {
     position: relative;
     border: 3px solid #8B4513;
     touch-action: manipulation;
-    overflow: hidden;              /* 防止目标点溢出 */
 }
 
 /* 第五步样式 */
@@ -792,7 +789,6 @@ body {
     border-radius: 10px;
     position: relative;
     border: 3px solid #8B4513;
-    overflow: hidden;              /* 防止安装点溢出 */
 }
 
 .staples-inventory {
