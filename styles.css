@@ -5,6 +5,176 @@
     box-sizing: border-box;
 }
 
+/* 开场剧情样式 */
+#story-intro {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.story-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/museum-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.5) sepia(0.3);
+}
+
+.story-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.1) 30%,
+        rgba(0, 0, 0, 0.1) 70%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
+    display: flex;
+    align-items: flex-end;
+    padding: 40px;
+}
+
+.story-content {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.story-text-container {
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 20px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.story-dialogue {
+    color: #FFFFFF;
+    font-size: 1.2em;
+    line-height: 1.8;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    margin: 0;
+    min-height: 60px;
+    animation: fadeInText 1s ease-in-out;
+}
+
+@keyframes fadeInText {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.story-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.next-button {
+    background: linear-gradient(145deg, #FFD700, #FFA500);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    animation: pulse 2s infinite;
+}
+
+.next-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+}
+
+.next-button:active {
+    transform: scale(0.95);
+}
+
+.triangle {
+    color: #8B4513;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-left: 3px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 5px 25px rgba(255, 215, 0, 0.8);
+    }
+}
+
+/* 移动端开场剧情优化 */
+@media (max-width: 768px) {
+    .story-overlay {
+        padding: 20px;
+    }
+    
+    .story-text-container {
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .story-dialogue {
+        font-size: 1em;
+        line-height: 1.6;
+        min-height: 50px;
+    }
+    
+    .next-button {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .triangle {
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .story-overlay {
+        padding: 15px;
+    }
+    
+    .story-text-container {
+        padding: 15px;
+    }
+    
+    .story-dialogue {
+        font-size: 0.9em;
+        line-height: 1.5;
+    }
+    
+    .next-button {
+        width: 45px;
+        height: 45px;
+    }
+}
+
 body {
     font-family: 'Microsoft YaHei', Arial, sans-serif;
     background: #1a1a1a;
@@ -2175,5 +2345,197 @@ input:checked + .slider:before {
     
     .music-controller {
         bottom: 60px;
+    }
+}
+
+/* 手机端第一步专项优化 */
+@media (max-width: 768px) {
+    /* 木匣和信封交互优化 */
+    .wooden-box {
+        width: 280px !important;
+        height: 200px !important;
+        margin: 20px auto;
+        border: 2px solid #8B4513;
+    }
+    
+    .box-lock {
+        width: 50px !important;
+        height: 50px !important;
+        border: 3px solid #FFD700 !important;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .box-lock:hover, .box-lock:active {
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    }
+    
+    .letter-envelope {
+        width: 120px !important;
+        height: 80px !important;
+        border: 3px solid #FFD700 !important;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease;
+    }
+    
+    .letter-envelope:hover, .letter-envelope:active {
+        transform: scale(1.1) !important;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.8) !important;
+    }
+    
+    /* 开场剧情手机优化 */
+    .story-dialogue {
+        font-size: 1.2em !important;
+        line-height: 1.6;
+        padding: 20px;
+        text-align: left;
+    }
+    
+    .story-next-btn {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 1.5em;
+        border: 2px solid #FFD700;
+        background: rgba(255, 215, 0, 0.2);
+    }
+    
+    .story-next-btn:hover, .story-next-btn:active {
+        background: rgba(255, 215, 0, 0.4);
+        transform: scale(1.05);
+    }
+    
+    /* 委托信显示优化 */
+    .story-text {
+        margin: 20px auto;
+        max-width: 95%;
+        z-index: 1000;
+    }
+    
+    .story-text div {
+        font-size: 1.1em !important;
+        padding: 20px !important;
+        line-height: 1.6 !important;
+        border-radius: 10px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* 触摸反馈优化 */
+    .box-lock, .letter-envelope, .story-next-btn {
+        -webkit-tap-highlight-color: rgba(255, 215, 0, 0.3);
+        user-select: none;
+    }
+}
+
+@media (max-width: 480px) {
+    /* 超小屏幕进一步优化 */
+    .wooden-box {
+        width: 250px !important;
+        height: 180px !important;
+    }
+    
+    .box-lock {
+        width: 45px !important;
+        height: 45px !important;
+    }
+    
+    .letter-envelope {
+        width: 100px !important;
+        height: 70px !important;
+    }
+    
+    .story-dialogue {
+        font-size: 1.1em !important;
+        padding: 15px;
+    }
+    
+    .story-next-btn {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.3em;
+    }
+    
+    .story-text div {
+        font-size: 1em !important;
+        padding: 15px !important;
+    }
+}
+
+/* 横屏模式第一步优化 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .wooden-box {
+        width: 300px !important;
+        height: 150px !important;
+    }
+    
+    .story-dialogue {
+        font-size: 1em !important;
+        padding: 10px;
+    }
+    
+    .story-next-btn {
+        width: 45px !important;
+        height: 45px !important;
+    }
+    
+    .story-text div {
+        font-size: 0.95em !important;
+        padding: 12px !important;
+    }
+}
+
+/* 移动端专用动画 */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        transform: scale(1.02);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 768px) {
+    /* 防止双击缩放 */
+    * {
+        touch-action: manipulation;
+    }
+    
+    /* 移除默认的触摸高亮 */
+    * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    
+    /* 但保留文本选择 */
+    p, span, div.story-text {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+    
+    /* 确保按钮和交互元素有合适的触摸区域 */
+    button, .box-lock, .letter-envelope, .story-next-btn {
+        min-width: 44px;
+        min-height: 44px;
+        position: relative;
+    }
+    
+    /* 为小元素添加扩大的触摸区域 */
+    .box-lock::before, .letter-envelope::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        z-index: 1;
     }
 }

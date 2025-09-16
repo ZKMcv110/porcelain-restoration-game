@@ -7,8 +7,25 @@
     <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
+    <!-- 开场剧情界面 -->
+    <div id="story-intro" class="screen active">
+        <div class="story-background"></div>
+        <div class="story-overlay">
+            <div class="story-content">
+                <div class="story-text-container">
+                    <p id="story-text" class="story-dialogue"></p>
+                </div>
+                <div class="story-controls">
+                    <div class="next-button" id="next-story" onclick="nextStoryLine()">
+                        <span class="triangle">▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 主菜单界面 -->
-    <div id="main-menu" class="screen active">
+    <div id="main-menu" class="screen">
         <div class="sky-background"></div>
         <div class="menu-content">
             <h1 class="game-title">锯瓷修复大师</h1>
@@ -71,7 +88,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="story-text hidden" id="story-text"></div>
+                    <div class="story-text hidden" id="step1-story-text"></div>
                 </div>
             </div>
         </div>
