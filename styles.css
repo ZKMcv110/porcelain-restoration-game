@@ -42,7 +42,7 @@
     display: flex;
     align-items: flex-end;
     padding: 40px;
-    padding-bottom: 140px; /* 为音乐控制器留出空间 */
+    padding-bottom: 180px; /* 增加更多空间避免被音乐控制器遮挡 */
 }
 
 .story-content {
@@ -133,7 +133,7 @@
 @media (max-width: 768px) {
     .story-overlay {
         padding: 20px;
-        padding-bottom: 120px; /* 移动端音乐控制器空间 */
+        padding-bottom: 160px; /* 增加移动端音乐控制器空间 */
     }
     
     .story-text-container {
@@ -160,7 +160,7 @@
 @media (max-width: 480px) {
     .story-overlay {
         padding: 15px;
-        padding-bottom: 100px; /* 小屏幕设备音乐控制器空间 */
+        padding-bottom: 140px; /* 增加小屏幕设备音乐控制器空间 */
     }
     
     .story-text-container {
