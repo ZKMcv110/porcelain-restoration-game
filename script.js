@@ -957,6 +957,12 @@ function initMarkingStep() {
     const canvas = document.getElementById('marking-canvas');
     const ctx = canvas.getContext('2d');
     
+    // 移动端canvas尺寸适配
+    if (isMobile) {
+        canvas.width = 300;
+        canvas.height = 200;
+    }
+    
     // 检测移动设备
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
@@ -1774,6 +1780,12 @@ function initKintsugiStep() {
     // 初始化金缮步骤
     const canvas = document.getElementById('kintsugi-canvas');
     const ctx = canvas.getContext('2d');
+    
+    // 移动端canvas尺寸适配
+    if (isMobile) {
+        canvas.width = 300;
+        canvas.height = 200;
+    }
     const ingredients = document.querySelectorAll('.ingredient');
     const mixingBowl = document.getElementById('mixing-bowl');
     

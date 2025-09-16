@@ -785,10 +785,11 @@ body {
 .vessel-with-holes {
     width: 400px;
     height: 300px;
-    background: url('images/repaired.jpg') center/contain no-repeat;
+    background: url('images/repaired.jpg') center/cover no-repeat;
     border-radius: 10px;
     position: relative;
     border: 3px solid #8B4513;
+    overflow: hidden; /* 确保图片不会超出边界 */
 }
 
 .staples-inventory {
@@ -2274,6 +2275,14 @@ input:checked + .slider:before {
     /* 画布进一步缩小 */
     #marking-canvas, #kintsugi-canvas, .drilling-target, .anvil-area, .vessel-with-holes, .completed-vessel, .polishing-area {
         max-width: 300px !important;
+        height: 200px !important;
+    }
+    
+    /* 移动端瓷器图片适配优化 */
+    .vessel-with-holes {
+        background-size: cover !important;
+        background-position: center !important;
+        width: 300px !important;
         height: 200px !important;
     }
     
