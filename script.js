@@ -819,9 +819,13 @@ function initCleaningStep() {
                         vessel.remove();
                         assemblyArea.innerHTML = `
                             <div style="
-                                width: 250px; 
-                                height: 250px; 
-                                background: url('images/damaged.jpg') center/cover no-repeat; 
+                                width: 100%;
+                                max-width: 280px;
+                                aspect-ratio: 1 / 1;
+                                background-image: url('images/damaged.jpg');
+                                background-size: contain;
+                                background-position: center;
+                                background-repeat: no-repeat;
                                 border-radius: 15px; 
                                 animation: glow 2s infinite;
                                 border: 3px solid #FFD700;
@@ -831,10 +835,7 @@ function initCleaningStep() {
                             ">
                                 <div style="
                                     position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    right: 0;
-                                    bottom: 0;
+                                    inset: 0;
                                     background: linear-gradient(45deg, transparent 40%, rgba(255,215,0,0.3) 42%, rgba(255,215,0,0.3) 44%, transparent 46%),
                                                 linear-gradient(-30deg, transparent 60%, rgba(255,215,0,0.2) 62%, rgba(255,215,0,0.2) 64%, transparent 66%);
                                     border-radius: 15px;
@@ -2222,20 +2223,20 @@ function initFinishingStep() {
     
     if (completedVessel && polishingArea) {
         let polishCount = 0;
-        const maxPolish = 8;
+        const maxPolish = 1; // 改为仅一个抛光点
         let isPolishing = false;
         
-        // 创建抛光区域
+        // 创建单个抛光点，居中放置
         for (let i = 0; i < maxPolish; i++) {
             const polishSpot = document.createElement('div');
             polishSpot.style.cssText = `
                 position: absolute;
-                width: 40px;
-                height: 40px;
+                width: 48px;
+                height: 48px;
                 background: rgba(255, 255, 255, 0.3);
                 border-radius: 50%;
-                left: ${100 + (i % 4) * 60}px;
-                top: ${120 + Math.floor(i / 4) * 60}px;
+                left: calc(50% - 24px);
+                top: calc(50% - 24px);
                 cursor: pointer;
                 border: 2px dashed #FFF;
                 transition: all 0.3s ease;
