@@ -743,8 +743,8 @@ function initCleaningStep() {
         vessel.id = 'cracked-vessel';
         vessel.dataset.cleaned = 'false';
         vessel.style.cssText = `
-            width: 200px;
-            height: 200px;
+            width: ${isMobile ? '150px' : '200px'};
+            height: ${isMobile ? '150px' : '200px'};
             background: url('images/damaged.jpg') center/cover no-repeat;
             border-radius: 15px;
             cursor: pointer;
@@ -963,6 +963,9 @@ function initMarkingStep() {
         canvas.height = 200;
     }
     
+    // 检测移动设备
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     if (canvas && ctx) {
         // 移动端优化
         if (isMobile) {
@@ -1035,7 +1038,6 @@ function initMarkingStep() {
                     
                     // 将标记位置存储到gameState中供下一步使用
                     gameState.markPositions = markPositions;
-                    console.log('标记位置已保存:', markPositions); // 调试信息
                 }
             }
         }
@@ -1059,11 +1061,8 @@ function initDrillingStep() {
         const markPositions = gameState.markPositions || [];
         const maxDrills = Math.min(markPositions.length, 6);
         
-        console.log('钻孔步骤获取到的标记位置:', markPositions); // 调试信息
-        
         // 如果没有标记位置，使用默认位置
         if (markPositions.length === 0) {
-            console.log('未找到标记位置，使用默认位置'); // 调试信息
             for (let i = 0; i < 3; i++) {
                 markPositions.push({
                     x: 150 + i * 80,
@@ -1078,18 +1077,20 @@ function initDrillingStep() {
             if (i >= 6) return; // 最多6个钻孔点
             
             const target = document.createElement('div');
-            // 移动端调整钻孔点大小和位置
-            const pointSize = isMobile ? 35 : 40;
-            const halfSize = pointSize / 2;
+            // 坐标转换：从canvas坐标转换到drilling-target坐标
+            const scaleX = isMobile ? 300 / 300 : 400 / 400; // 保持1:1比例
+            const scaleY = isMobile ? 200 / 200 : 300 / 300; // 保持1:1比例
+            const adjustedX = mark.x * scaleX;
+            const adjustedY = mark.y * scaleY;
             
             target.style.cssText = `
                 position: absolute;
-                width: ${pointSize}px;
-                height: ${pointSize}px;
+                width: 40px;
+                height: 40px;
                 background: #FFD700;
                 border-radius: 50%;
-                left: ${mark.x - halfSize}px;
-                top: ${mark.y - halfSize}px;
+                left: ${adjustedX - 20}px;
+                top: ${adjustedY - 20}px;
                 cursor: pointer;
                 border: 3px solid #8B4513;
                 box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -1098,8 +1099,7 @@ function initDrillingStep() {
                 justify-content: center;
                 font-weight: bold;
                 color: #8B4513;
-                font-size: ${isMobile ? '12px' : '14px'};
-                z-index: 10;
+                font-size: 14px;
             `;
             target.textContent = mark.id;
             target.dataset.drilled = 'false';
@@ -1146,9 +1146,12 @@ function initDrillingStep() {
                             if (!gameState.drilledPositions) {
                                 gameState.drilledPositions = [];
                             }
+                            // 存储转换后的坐标
+                            const scaleX = isMobile ? 300 / 300 : 400 / 400;
+                            const scaleY = isMobile ? 200 / 200 : 300 / 300;
                             gameState.drilledPositions.push({
-                                x: mark.x,
-                                y: mark.y,
+                                x: mark.x * scaleX,
+                                y: mark.y * scaleY,
                                 id: mark.id
                             });
                             
@@ -1242,12 +1245,16 @@ function initForgingStep() {
                 createForgePoint(180 + i * 35, 140, i + 1);
             }
         } else {
-            // 使用实际标记位置，保持原始坐标
+            // 使用实际标记位置，根据容器尺寸进行坐标转换
             showMessage(`在 ${actualForges} 个标记位置进行锻造塑形。`);
             for (let i = 0; i < actualForges; i++) {
                 const mark = markPositions[i];
-                // 直接使用标记的真实位置，不做任何调整
-                createForgePoint(mark.x, mark.y, mark.id);
+                // 坐标转换：从canvas坐标转换到anvil-area坐标
+                const scaleX = isMobile ? 300 / 300 : 400 / 400; // 保持1:1比例
+                const scaleY = isMobile ? 200 / 200 : 300 / 300; // 保持1:1比例
+                const adjustedX = mark.x * scaleX;
+                const adjustedY = mark.y * scaleY;
+                createForgePoint(adjustedX, adjustedY, mark.id);
             }
         }
         
