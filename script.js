@@ -60,6 +60,15 @@ function updateStoryText() {
     }
 }
 
+function skipStory() {
+    // 跳过剧情，直接进入主菜单
+    if (gameState) {
+        gameState.playSound('click');
+    }
+    showMainMenu();
+    showMessage('已跳过开场剧情');
+}
+
 function showMainMenu() {
     document.getElementById('story-intro').classList.remove('active');
     document.getElementById('main-menu').classList.add('active');
@@ -1473,177 +1482,263 @@ function initInstallationStep() {
         const drilledPositions = gameState.drilledPositions || [];
         const maxInstalls = Math.max(drilledPositions.length, 3); // 使用实际钻孔数量
         
+        // 检测移动设备
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         ('ontouchstart' in window) || 
+                         (navigator.maxTouchPoints > 0) ||
+                         window.innerWidth <= 768;
+        
+        // 移动端优化提示
+        if (isMobile) {
+            showMessage('📱 移动端优化：锔钉更大，检测范围扩大到120px，更易操作！');
+        }
+        
         // 创建锔钉库存 - 根据实际需要的数量，支持拖拽
         for (let i = 0; i < maxInstalls; i++) {
             const staple = document.createElement('div');
             staple.style.cssText = `
-                width: 40px;
-                height: 20px;
+                width: ${isMobile ? '60px' : '40px'};
+                height: ${isMobile ? '30px' : '20px'};
                 background: linear-gradient(90deg, #CD7F32, #B87333);
                 border-radius: 10px;
-                margin: 10px auto;
+                margin: ${isMobile ? '15px' : '10px'} auto;
                 cursor: grab;
                 transition: all 0.3s ease;
                 position: relative;
                 z-index: 10;
+                border: ${isMobile ? '3px solid #FFD700' : '2px solid #8B4513'};
+                box-shadow: ${isMobile ? '0 0 15px rgba(255, 215, 0, 0.5)' : 'none'};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: ${isMobile ? '14px' : '12px'};
+                color: #FFF;
+                font-weight: bold;
             `;
+            staple.innerHTML = `钉${i + 1}`;
             staple.dataset.used = 'false';
-            staple.draggable = true;
+            staple.dataset.stapleIndex = i;
+            staple.draggable = !isMobile; // 移动端不使用HTML5拖拽
             
-            // 检测移动设备
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-
             if (isMobile) {
-                // 移动端触摸拖拽
+                // 移动端触摸拖拽 - 完全重写，更稳定
                 let isDragging = false;
                 let dragElement = null;
+                let startX = 0;
+                let startY = 0;
 
                 staple.addEventListener('touchstart', (e) => {
                     if (staple.dataset.used === 'false') {
                         e.preventDefault();
+                        e.stopPropagation();
+                        
                         isDragging = true;
                         const touch = e.touches[0];
+                        startX = touch.clientX;
+                        startY = touch.clientY;
                         
                         gameState.playSound('click');
                         
-                        // 创建拖拽副本
+                        // 创建更明显的拖拽副本
                         dragElement = staple.cloneNode(true);
-                        dragElement.style.position = 'fixed';
-                        dragElement.style.zIndex = '9999';
-                        dragElement.style.pointerEvents = 'none';
-                        dragElement.style.opacity = '0.8';
-                        dragElement.style.transform = 'scale(1.3)';
-                        dragElement.style.left = (touch.clientX - 20) + 'px';
-                        dragElement.style.top = (touch.clientY - 10) + 'px';
+                        dragElement.style.cssText = `
+                            position: fixed;
+                            width: 80px;
+                            height: 40px;
+                            background: linear-gradient(90deg, #FFD700, #FFA500);
+                            border-radius: 15px;
+                            z-index: 99999;
+                            pointer-events: none;
+                            opacity: 0.9;
+                            transform: scale(1.5);
+                            left: ${touch.clientX - 40}px;
+                            top: ${touch.clientY - 20}px;
+                            border: 4px solid #FF6B6B;
+                            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            color: #8B4513;
+                            font-weight: bold;
+                            animation: pulse 0.5s infinite;
+                        `;
                         document.body.appendChild(dragElement);
                         
                         staple.style.opacity = '0.3';
-                        showMessage('拖拽锔钉到孔洞上进行安装！检测范围已扩大');
+                        staple.style.transform = 'scale(0.8)';
                         
-                        // 触觉反馈
+                        // 高亮所有可用的安装点
+                        const installPoints = document.querySelectorAll('[data-installed="false"]');
+                        installPoints.forEach(point => {
+                            point.style.background = '#FFD700';
+                            point.style.transform = 'scale(1.5)';
+                            point.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+                            point.style.border = '4px solid #FF6B6B';
+                            point.style.animation = 'pulse 1s infinite';
+                        });
+                        
+                        showMessage('🎯 拖拽锔钉到任意闪烁的孔洞！检测范围120px');
+                        
+                        // 强烈的触觉反馈
                         if (navigator.vibrate) {
-                            navigator.vibrate(50);
+                            navigator.vibrate([100, 50, 100]);
                         }
                     }
-                });
+                }, { passive: false });
 
                 const handleTouchMove = (e) => {
                     if (isDragging && dragElement) {
                         e.preventDefault();
+                        e.stopPropagation();
+                        
                         const touch = e.touches[0];
                         
-                        dragElement.style.left = (touch.clientX - 20) + 'px';
-                        dragElement.style.top = (touch.clientY - 10) + 'px';
+                        // 更新拖拽元素位置
+                        dragElement.style.left = (touch.clientX - 40) + 'px';
+                        dragElement.style.top = (touch.clientY - 20) + 'px';
                         
-                        // 检查安装点 - 大幅扩大检测范围
-                        const installPoints = document.querySelectorAll('[data-installed]');
+                        // 检查所有安装点 - 超大检测范围
+                        const installPoints = document.querySelectorAll('[data-installed="false"]');
+                        let nearPoint = false;
+                        
                         installPoints.forEach(point => {
-                            if (point.dataset.installed === 'false') {
-                                const rect = point.getBoundingClientRect();
-                                const centerX = rect.left + rect.width / 2;
-                                const centerY = rect.top + rect.height / 2;
-                                const distance = Math.sqrt(
-                                    Math.pow(touch.clientX - centerX, 2) + 
-                                    Math.pow(touch.clientY - centerY, 2)
-                                );
+                            const rect = point.getBoundingClientRect();
+                            const centerX = rect.left + rect.width / 2;
+                            const centerY = rect.top + rect.height / 2;
+                            const distance = Math.sqrt(
+                                Math.pow(touch.clientX - centerX, 2) + 
+                                Math.pow(touch.clientY - centerY, 2)
+                            );
+                            
+                            // 超大检测范围 - 120px
+                            if (distance < 120) {
+                                point.style.background = '#00FF00';
+                                point.style.transform = 'scale(2)';
+                                point.style.boxShadow = '0 0 40px rgba(0, 255, 0, 1)';
+                                point.style.border = '6px solid #00FF00';
+                                nearPoint = true;
                                 
-                                // 扩大检测范围到80px
-                                if (distance < 80) {
-                                    point.style.background = '#FFD700';
-                                    point.style.transform = 'scale(1.8)';
-                                    point.style.boxShadow = '0 0 25px rgba(255, 215, 0, 1)';
-                                    point.style.border = '4px solid #FFD700';
-                                } else {
-                                    point.style.background = '#654321';
-                                    point.style.transform = 'scale(1)';
-                                    point.style.boxShadow = 'none';
-                                    point.style.border = '2px solid #8B4513';
-                                }
+                                // 更新拖拽元素样式表示可以放置
+                                dragElement.style.background = 'linear-gradient(90deg, #00FF00, #32CD32)';
+                                dragElement.style.border = '4px solid #00FF00';
+                            } else {
+                                point.style.background = '#FFD700';
+                                point.style.transform = 'scale(1.5)';
+                                point.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+                                point.style.border = '4px solid #FF6B6B';
                             }
                         });
+                        
+                        // 如果不在任何点附近，恢复拖拽元素原始样式
+                        if (!nearPoint) {
+                            dragElement.style.background = 'linear-gradient(90deg, #FFD700, #FFA500)';
+                            dragElement.style.border = '4px solid #FF6B6B';
+                        }
                     }
                 };
 
                 const handleTouchEnd = (e) => {
                     if (isDragging && dragElement) {
                         e.preventDefault();
-                        isDragging = false;
+                        e.stopPropagation();
                         
+                        isDragging = false;
                         const touch = e.changedTouches[0];
                         let installed = false;
                         
-                        const installPoints = document.querySelectorAll('[data-installed]');
+                        // 检查是否成功安装
+                        const installPoints = document.querySelectorAll('[data-installed="false"]');
                         installPoints.forEach(point => {
-                            if (point.dataset.installed === 'false') {
-                                const rect = point.getBoundingClientRect();
-                                const centerX = rect.left + rect.width / 2;
-                                const centerY = rect.top + rect.height / 2;
-                                const distance = Math.sqrt(
-                                    Math.pow(touch.clientX - centerX, 2) + 
-                                    Math.pow(touch.clientY - centerY, 2)
-                                );
+                            const rect = point.getBoundingClientRect();
+                            const centerX = rect.left + rect.width / 2;
+                            const centerY = rect.top + rect.height / 2;
+                            const distance = Math.sqrt(
+                                Math.pow(touch.clientX - centerX, 2) + 
+                                Math.pow(touch.clientY - centerY, 2)
+                            );
+                            
+                            // 超大安装范围 - 120px
+                            if (distance < 120 && !installed) {
+                                // 安装成功
+                                staple.style.opacity = '0.3';
+                                staple.style.transform = 'scale(0.6)';
+                                staple.style.cursor = 'not-allowed';
+                                staple.style.background = '#666';
+                                staple.dataset.used = 'true';
+                                staple.innerHTML = '已用';
                                 
-                                // 扩大安装范围到80px
-                                if (distance < 80) {
-                                    // 安装成功
-                                    staple.style.transform = 'scale(0.8)';
-                                    staple.style.cursor = 'not-allowed';
-                                    staple.dataset.used = 'true';
-                                    staple.style.background = '#666';
+                                point.style.background = '#32CD32';
+                                point.style.transform = 'scale(1.8)';
+                                point.style.animation = 'none';
+                                point.dataset.installed = 'true';
+                                installCount++;
+                                
+                                // 安装成功动画
+                                setTimeout(() => {
+                                    point.style.transform = 'scale(1.2)';
+                                    point.innerHTML = '✅';
+                                    point.style.fontSize = '20px';
+                                    point.style.color = '#FFF';
+                                    point.style.background = '#32CD32';
                                     
-                                    point.style.background = '#FFD700';
-                                    point.style.transform = 'scale(1.3)';
-                                    point.dataset.installed = 'true';
-                                    installCount++;
-                                    
-                                    setTimeout(() => {
-                                        point.style.transform = 'scale(1)';
-                                        point.innerHTML = '⚡';
-                                        point.style.fontSize = '16px';
-                                        point.style.color = '#8B4513';
-                                        showMessage(`锔钉安装完成！还需安装 ${drilledPositions.length - installCount} 个。`);
-                                        
-                                        if (installCount >= drilledPositions.length) {
-                                            setTimeout(() => {
-                                                showMessage('所有锔钉安装完成！瓷器结构已加固。');
-                                                document.getElementById('complete-btn').style.display = 'inline-block';
-                                            }, 1000);
-                                        }
-                                    }, 300);
-                                    
-                                    installed = true;
-                                    
-                                    // 成功触觉反馈
-                                    if (navigator.vibrate) {
-                                        navigator.vibrate([100, 50, 100]);
+                                    const remaining = drilledPositions.length - installCount;
+                                    if (remaining > 0) {
+                                        showMessage(`🎉 锔钉安装成功！还需安装 ${remaining} 个锔钉。`);
+                                    } else {
+                                        showMessage('🎉 所有锔钉安装完成！瓷器结构已加固！');
+                                        document.getElementById('complete-btn').style.display = 'inline-block';
                                     }
-                                } else {
-                                    // 重置样式
-                                    point.style.background = '#654321';
-                                    point.style.transform = 'scale(1)';
-                                    point.style.boxShadow = 'none';
-                                    point.style.border = '2px solid #8B4513';
+                                }, 300);
+                                
+                                installed = true;
+                                
+                                // 成功的强烈触觉反馈
+                                if (navigator.vibrate) {
+                                    navigator.vibrate([200, 100, 200, 100, 300]);
                                 }
                             }
                         });
                         
+                        // 重置所有安装点样式
+                        const allInstallPoints = document.querySelectorAll('[data-installed]');
+                        allInstallPoints.forEach(point => {
+                            if (point.dataset.installed === 'false') {
+                                point.style.background = '#654321';
+                                point.style.transform = 'scale(1)';
+                                point.style.boxShadow = 'none';
+                                point.style.border = '2px solid #8B4513';
+                                point.style.animation = 'none';
+                            }
+                        });
+                        
                         if (!installed) {
+                            // 安装失败，恢复锔钉状态
                             staple.style.opacity = '1';
-                            showMessage('请将锔钉拖拽到孔洞附近！检测范围很大，不用太精确。');
+                            staple.style.transform = 'scale(1)';
+                            showMessage('❌ 未成功安装！请将锔钉拖拽到孔洞附近（120px范围内）');
+                            
+                            // 失败触觉反馈
+                            if (navigator.vibrate) {
+                                navigator.vibrate([100, 100, 100]);
+                            }
                         }
                         
-                        // 清理
-                        if (dragElement) {
+                        // 清理拖拽元素
+                        if (dragElement && dragElement.parentNode) {
                             document.body.removeChild(dragElement);
                             dragElement = null;
                         }
                     }
                 };
 
+                // 绑定全局触摸事件
                 document.addEventListener('touchmove', handleTouchMove, { passive: false });
                 document.addEventListener('touchend', handleTouchEnd, { passive: false });
+                document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+                
             } else {
-                // 桌面端拖拽
+                // 桌面端拖拽保持不变
                 staple.addEventListener('dragstart', (e) => {
                     if (staple.dataset.used === 'false') {
                         gameState.playSound('click');
@@ -1683,26 +1778,33 @@ function initInstallationStep() {
         
         function createInstallPoint(x, y, index) {
             const installPoint = document.createElement('div');
+            
+            // 移动端使用更大的安装点
+            const pointSize = isMobile ? 50 : 25;
+            const fontSize = isMobile ? 20 : 12;
+            
             installPoint.style.cssText = `
                 position: absolute;
-                width: 25px;
-                height: 25px;
+                width: ${pointSize}px;
+                height: ${pointSize}px;
                 background: #654321;
                 border-radius: 50%;
-                left: ${x - 12}px;
-                top: ${y - 12}px;
+                left: ${x - pointSize/2}px;
+                top: ${y - pointSize/2}px;
                 cursor: pointer;
-                border: 2px solid #8B4513;
+                border: ${isMobile ? '4px solid #FFD700' : '2px solid #8B4513'};
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 12px;
+                font-size: ${fontSize}px;
                 color: #FFD700;
                 font-weight: bold;
                 transition: all 0.3s ease;
+                box-shadow: ${isMobile ? '0 0 15px rgba(255, 215, 0, 0.5)' : 'none'};
+                z-index: 5;
             `;
             installPoint.dataset.installed = 'false';
-            installPoint.innerHTML = '○';
+            installPoint.innerHTML = isMobile ? `孔${index + 1}` : '○';
             
             // 拖拽放置事件
             installPoint.addEventListener('dragover', (e) => {
@@ -2404,61 +2506,18 @@ function toggleHints() {
 }
 
 function backToMenu() {
-    // 隐藏所有屏幕
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    
-    // 隐藏最终展示
-    const finalPresentation = document.getElementById('final-presentation');
-    if (finalPresentation) {
-        finalPresentation.style.display = 'none';
-    }
-    
-    // 显示步骤控制按钮
-    const stepControls = document.querySelector('.step-controls');
-    if (stepControls) {
-        stepControls.style.display = 'flex';
-    }
-    
-    // 显示主菜单
-    document.getElementById('main-menu').classList.add('active');
-    
-    // 完全重置游戏状态 - 不保存任何进度
+    // 播放点击音效
     if (gameState) {
-        gameState.currentStep = 1;
-        gameState.stepProgress = {}; // 清空所有步骤进度
-        gameState.updateProgress();
-        gameState.updateStepTitle();
         gameState.playSound('click');
     }
     
-    // 重置所有步骤状态
-    resetAllStepStates();
+    // 显示提示信息
+    showMessage('正在返回主菜单...');
     
-    // 隐藏所有步骤内容
-    document.querySelectorAll('.step-content').forEach(content => {
-        content.classList.add('hidden');
-    });
-    
-    // 显示所有步骤介绍
-    document.querySelectorAll('.step-intro').forEach(intro => {
-        intro.classList.remove('hidden');
-    });
-    
-    // 清除所有动态生成的元素
-    document.querySelectorAll('.mark-point, .drill-point, .forge-point, .install-point, .polish-spot').forEach(el => {
-        el.remove();
-    });
-    
-    // 重置画布
-    const canvas = document.getElementById('painting-canvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    
-    showMessage('已返回主菜单，游戏进度已清除');
+    // 延迟一下让用户看到提示，然后刷新页面
+    setTimeout(() => {
+        window.location.reload();
+    }, 500);
 }
 
 function restartGame() {

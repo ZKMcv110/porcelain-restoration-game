@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>移动端触控测试 - 锔钉拖拽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .test-container {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .info {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #FFD700;
+        }
+        
+        .staples-area {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .staples-area h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        
+        .test-staple {
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(90deg, #CD7F32, #B87333);
+            border-radius: 10px;
+            margin: 15px auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #FFF;
+            font-weight: bold;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .holes-area {
+            width: 100%;
+            max-width: 350px;
+            height: 250px;
+            background: url('images/repaired.jpg') center/contain no-repeat, 
+                        linear-gradient(135deg, #8B4513, #A0522D);
+            border-radius: 15px;
+            position: relative;
+            border: 3px solid #8B4513;
+            margin: 0 auto;
+        }
+        
+        .test-hole {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #654321;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 4px solid #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #FFD700;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            z-index: 5;
+        }
+        
+        .test-hole:nth-child(1) { top: 50px; left: 80px; }
+        .test-hole:nth-child(2) { top: 100px; right: 60px; }
+        .test-hole:nth-child(3) { bottom: 80px; left: 100px; }
+        
+        .status {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #32CD32;
+            color: #32CD32;
+        }
+        
+        .instructions {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #FFD700;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 1); transform: scale(1.1); }
+            100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+        }
+        
+        @keyframes success {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(1.1); }
+            75% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .dragging {
+            animation: pulse 0.5s infinite;
+            z-index: 99999;
+        }
+        
+        .drop-zone {
+            background: #00FF00 !important;
+            transform: scale(2) !important;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 1) !important;
+            border: 6px solid #00FF00 !important;
+        }
+        
+        .success {
+            animation: success 0.6s ease-out;
+            background: #32CD32 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 移动端拖拽测试</h1>
+        
+        <div class="instructions">
+            <strong>📱 测试说明：</strong><br>
+            1. 长按下方的锔钉开始拖拽<br>
+            2. 拖拽到任意孔洞附近（120px范围内）<br>
+            3. 松开手指完成安装<br>
+            4. 成功安装会有震动反馈
+        </div>
+        
+        <div class="info">
+            <p>检测范围：120px 超大范围</p>
+            <p>触觉反馈：支持震动提示</p>
+            <p>视觉反馈：实时高亮显示</p>
+        </div>
+        
+        <div class="staples-area">
+            <h3>🔩 锔钉库存</h3>
+            <div class="test-staple" data-used="false">钉1</div>
+            <div class="test-staple" data-used="false">钉2</div>
+            <div class="test-staple" data-used="false">钉3</div>
+        </div>
+        
+        <div class="holes-area">
+            <div class="test-hole" data-installed="false">孔1</div>
+            <div class="test-hole" data-installed="false">孔2</div>
+            <div class="test-hole" data-installed="false">孔3</div>
+        </div>
+        
+        <div class="status" id="status">
+            准备开始测试...
+        </div>
+    </div>
+
+    <script>
+        let installCount = 0;
+        const maxInstalls = 3;
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+        
+        // 为每个锔钉添加触摸拖拽功能
+        document.querySelectorAll('.test-staple').forEach((staple, index) => {
+            let isDragging = false;
+            let dragElement = null;
+            
+            staple.addEventListener('touchstart', (e) => {
+                if (staple.dataset.used === 'false') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    isDragging = true;
+                    const touch = e.touches[0];
+                    
+                    // 创建拖拽副本
+                    dragElement = staple.cloneNode(true);
+                    dragElement.style.cssText = `
+                        position: fixed;
+                        width: 80px;
+                        height: 40px;
+                        background: linear-gradient(90deg, #FFD700, #FFA500);
+                        border-radius: 15px;
+                        z-index: 99999;
+                        pointer-events: none;
+                        opacity: 0.9;
+                        transform: scale(1.5);
+                        left: ${touch.clientX - 40}px;
+                        top: ${touch.clientY - 20}px;
+                        border: 4px solid #FF6B6B;
+                        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 16px;
+                        color: #8B4513;
+                        font-weight: bold;
+                    `;
+                    document.body.appendChild(dragElement);
+                    
+                    staple.style.opacity = '0.3';
+                    staple.classList.add('dragging');
+                    
+                    // 高亮所有可用孔洞
+                    document.querySelectorAll('.test-hole[data-installed="false"]').forEach(hole => {
+                        hole.style.background = '#FFD700';
+                        hole.style.transform = 'scale(1.5)';
+                        hole.style.animation = 'pulse 1s infinite';
+                    });
+                    
+                    updateStatus('🎯 拖拽锔钉到任意闪烁的孔洞！');
+                    
+                    // 触觉反馈
+                    if (navigator.vibrate) {
+                        navigator.vibrate([100, 50, 100]);
+                    }
+                }
+            }, { passive: false });
+            
+            const handleTouchMove = (e) => {
+                if (isDragging && dragElement) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    
+                    dragElement.style.left = (touch.clientX - 40) + 'px';
+                    dragElement.style.top = (touch.clientY - 20) + 'px';
+                    
+                    // 检查所有孔洞
+                    let nearHole = false;
+                    document.querySelectorAll('.test-hole[data-installed="false"]').forEach(hole => {
+                        const rect = hole.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        const distance = Math.sqrt(
+                            Math.pow(touch.clientX - centerX, 2) + 
+                            Math.pow(touch.clientY - centerY, 2)
+                        );
+                        
+                        if (distance < 120) {
+                            hole.classList.add('drop-zone');
+                            dragElement.style.background = 'linear-gradient(90deg, #00FF00, #32CD32)';
+                            dragElement.style.border = '4px solid #00FF00';
+                            nearHole = true;
+                        } else {
+                            hole.classList.remove('drop-zone');
+                        }
+                    });
+                    
+                    if (!nearHole) {
+                        dragElement.style.background = 'linear-gradient(90deg, #FFD700, #FFA500)';
+                        dragElement.style.border = '4px solid #FF6B6B';
+                    }
+                }
+            };
+            
+            const handleTouchEnd = (e) => {
+                if (isDragging && dragElement) {
+                    e.preventDefault();
+                    isDragging = false;
+                    
+                    const touch = e.changedTouches[0];
+                    let installed = false;
+                    
+                    document.querySelectorAll('.test-hole[data-installed="false"]').forEach(hole => {
+                        const rect = hole.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        const distance = Math.sqrt(
+                            Math.pow(touch.clientX - centerX, 2) + 
+                            Math.pow(touch.clientY - centerY, 2)
+                        );
+                        
+                        if (distance < 120 && !installed) {
+                            // 安装成功
+                            staple.style.opacity = '0.3';
+                            staple.style.background = '#666';
+                            staple.dataset.used = 'true';
+                            staple.innerHTML = '已用';
+                            
+                            hole.classList.add('success');
+                            hole.dataset.installed = 'true';
+                            hole.innerHTML = '✅';
+                            hole.style.color = '#FFF';
+                            installCount++;
+                            
+                            updateStatus(`🎉 安装成功！还需安装 ${maxInstalls - installCount} 个锔钉`);
+                            
+                            if (installCount >= maxInstalls) {
+                                setTimeout(() => {
+                                    updateStatus('🎊 所有锔钉安装完成！测试成功！');
+                                }, 500);
+                            }
+                            
+                            installed = true;
+                            
+                            // 成功震动反馈
+                            if (navigator.vibrate) {
+                                navigator.vibrate([200, 100, 200, 100, 300]);
+                            }
+                        }
+                    });
+                    
+                    // 重置所有孔洞样式
+                    document.querySelectorAll('.test-hole').forEach(hole => {
+                        hole.classList.remove('drop-zone');
+                        if (hole.dataset.installed === 'false') {
+                            hole.style.background = '#654321';
+                            hole.style.transform = 'scale(1)';
+                            hole.style.animation = 'none';
+                        }
+                    });
+                    
+                    if (!installed) {
+                        staple.style.opacity = '1';
+                        staple.classList.remove('dragging');
+                        updateStatus('❌ 未成功安装！请拖拽到孔洞附近（120px范围内）');
+                        
+                        if (navigator.vibrate) {
+                            navigator.vibrate([100, 100, 100]);
+                        }
+                    }
+                    
+                    // 清理拖拽元素
+                    if (dragElement && dragElement.parentNode) {
+                        document.body.removeChild(dragElement);
+                        dragElement = null;
+                    }
+                }
+            };
+            
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleTouchEnd, { passive: false });
+        });
+        
+        updateStatus('👆 长按锔钉开始拖拽测试');
+    </script>
+</body>
+</html>
