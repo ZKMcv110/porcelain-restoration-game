@@ -715,10 +715,9 @@ function startStep8() {
 function initCleaningStep() {
     // 初始化清洗步骤
     const piecesContainer = document.getElementById('pieces-container');
-    const assemblyArea = document.getElementById('assembly-area');
     const toolBtns = document.querySelectorAll('.tool-btn');
     
-    if (piecesContainer && assemblyArea) {
+    if (piecesContainer) {
         let isVesselCleaned = false;
         let currentTool = 'brush';
         let brushingComplete = false;
@@ -735,7 +734,6 @@ function initCleaningStep() {
         
         // 清空容器并设置初始状态
         piecesContainer.innerHTML = '';
-        assemblyArea.innerHTML = '<p>点击器物进行清洗，清洗完成后会自动归位</p>';
         
         // 创建有裂缝的完整器物
         const vessel = document.createElement('div');
@@ -814,35 +812,39 @@ function initCleaningStep() {
                     vessel.style.boxShadow = '0 0 20px rgba(135, 206, 235, 0.5)';
                     waterEffect.remove();
                     
-                    // 自动归位到中央区域
+                    // 显示清洗完成的器物
                     setTimeout(() => {
-                        vessel.remove();
-                        assemblyArea.innerHTML = `
-                            <div style="
-                                width: 250px; 
-                                height: 250px; 
-                                background: url('images/damaged.jpg') center/cover no-repeat; 
-                                border-radius: 15px; 
-                                animation: glow 2s infinite;
-                                border: 3px solid #FFD700;
-                                box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
-                                margin: 20px auto;
-                                position: relative;
-                            ">
-                                <div style="
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    right: 0;
-                                    bottom: 0;
-                                    background: linear-gradient(45deg, transparent 40%, rgba(255,215,0,0.3) 42%, rgba(255,215,0,0.3) 44%, transparent 46%),
-                                                linear-gradient(-30deg, transparent 60%, rgba(255,215,0,0.2) 62%, rgba(255,215,0,0.2) 64%, transparent 66%);
-                                    border-radius: 15px;
-                                    pointer-events: none;
-                                "></div>
-                            </div>
+                        // 更新器物样式为清洗完成状态
+                        vessel.style.cssText = `
+                            width: 250px;
+                            height: 250px;
+                            background: url('images/damaged.jpg') center/cover no-repeat;
+                            border-radius: 15px;
+                            margin: 20px auto;
+                            animation: glow 2s infinite;
+                            border: 3px solid #FFD700;
+                            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+                            position: relative;
+                            cursor: default;
                         `;
-                        showMessage('器物清洗完成并已归位！裂缝清晰可见，准备进入下一步修复。');
+                        
+                        // 更新裂缝效果为金色
+                        const crackOverlay = vessel.querySelector('div');
+                        if (crackOverlay) {
+                            crackOverlay.style.cssText = `
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background: linear-gradient(45deg, transparent 40%, rgba(255,215,0,0.3) 42%, rgba(255,215,0,0.3) 44%, transparent 46%),
+                                            linear-gradient(-30deg, transparent 60%, rgba(255,215,0,0.2) 62%, rgba(255,215,0,0.2) 64%, transparent 66%);
+                                border-radius: 15px;
+                                pointer-events: none;
+                            `;
+                        }
+                        
+                        showMessage('器物清洗完成！裂缝清晰可见，准备进入下一步修复。');
                         document.getElementById('complete-btn').style.display = 'inline-block';
                     }, 800);
                 }, 500);
