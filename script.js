@@ -2222,6 +2222,11 @@ function initFinishingStep() {
     
     if (completedVessel && polishButton) {
         let isPolishing = false;
+        
+        // 移动端检测
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         ('ontouchstart' in window) || 
+                         (navigator.maxTouchPoints > 0);
 
         polishButton.addEventListener('click', function() {
             if (isPolishing) return;
@@ -2265,7 +2270,8 @@ function initFinishingStep() {
                     }
                     
                     setTimeout(() => {
-                        showFinalPresentation();
+                        showMessage('🎉 所有修复工作完成！器物重获新生！');
+                        document.getElementById('complete-btn').style.display = 'inline-block';
                     }, 2000);
                 }
             }, 100);
@@ -2416,13 +2422,41 @@ function backToMenu() {
     // 显示主菜单
     document.getElementById('main-menu').classList.add('active');
     
-    // 重置游戏状态
+    // 完全重置游戏状态 - 不保存任何进度
     if (gameState) {
         gameState.currentStep = 1;
+        gameState.stepProgress = {}; // 清空所有步骤进度
         gameState.updateProgress();
         gameState.updateStepTitle();
         gameState.playSound('click');
     }
+    
+    // 重置所有步骤状态
+    resetAllStepStates();
+    
+    // 隐藏所有步骤内容
+    document.querySelectorAll('.step-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // 显示所有步骤介绍
+    document.querySelectorAll('.step-intro').forEach(intro => {
+        intro.classList.remove('hidden');
+    });
+    
+    // 清除所有动态生成的元素
+    document.querySelectorAll('.mark-point, .drill-point, .forge-point, .install-point, .polish-spot').forEach(el => {
+        el.remove();
+    });
+    
+    // 重置画布
+    const canvas = document.getElementById('painting-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    showMessage('已返回主菜单，游戏进度已清除');
 }
 
 function restartGame() {

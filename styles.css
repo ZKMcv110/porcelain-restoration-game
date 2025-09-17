@@ -633,25 +633,7 @@ body {
     border-color: #FFD700;
 }
 
-.assembly-area {
-    width: 400px;
-    height: 300px;
-    border: 3px dashed #FFD700;
-    border-radius: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
-    flex-wrap: wrap;
-    padding: 20px;
-}
 
-.assembly-area p {
-    color: #FFD700;
-    text-align: center;
-    font-size: 1.1em;
-}
 
 /* 第三步样式 */
 .marking-workspace {
@@ -1980,16 +1962,7 @@ input:checked + .slider:before {
         min-height: 120px;
     }
     
-    .assembly-area {
-        width: 100%;
-        max-width: 350px;
-        height: 200px;
-        padding: 15px;
-    }
-    
-    .assembly-area p {
-        font-size: 1em;
-    }
+
     
     /* 第三步移动端优化 */
     .marking-workspace {
@@ -2374,9 +2347,7 @@ input:checked + .slider:before {
         height: 130px;
     }
     
-    .assembly-area {
-        height: 150px;
-    }
+
     
     .message {
         font-size: 0.8em;
