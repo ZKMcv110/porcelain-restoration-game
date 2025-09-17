@@ -1,3 +1,79 @@
+// 开场剧情数据
+const storyLines = [
+    "大家好，今天咱们来讲一个关于'锔瓷'技艺跨越百年的故事——它不只修补瓷器，更修复的是文化、记忆和民族的魂。",
+    "故事开始于国家博物馆，一尊明代的青花瓶静静立在展柜中，上面有七道金线和锔钉缀成的北斗七星——而这每道痕迹，背后都藏着一段历史。",
+    "时间回到1928年，北平琉璃厂。少年学徒林怀瑾一不小心，打碎了店里要鉴赏的贡瓶，急得不知如何是好。",
+    "这时，一位老匠人郭守愚现身了，他说：'瓷虽碎了，但魂不能散。'他拿出金刚钻，开始修补——",
+    "七天七夜，锔钉像星星一样落在瓷片上，最后一道裂痕被补上。临走前，老人留下一句话：'万物皆有裂缝，那是光照进来的地方。'",
+    "转眼到了1937年，卢沟桥事变爆发，战火波及琉璃厂。这时林怀瑾已是掌柜，他把锔瓷藏品紧急藏进地窖。",
+    "日军来搜查，为掩护暗格中的锔瓶，林怀瑾的妻子毅然推倒博古架——瓷器碎声响彻店里，日军大笑离去。",
+    "林怀瑾一边颤抖着捡碎片，一边把妻子的银簪熔成锔钉，修补这只瓶。当最后一颗锔钉落下——城外传来平型关大捷的消息。",
+    "时间跳到1972年，林家第三代传人林望舒在干校牛棚里，偷偷跟着八十岁的郭智军学习锔瓷。",
+    "老人用草秆代替锔钉教他，说：'锔瓷有三重境界——修形、续韵、铸魂。而现在我们要修补的，是文明的断层。'",
+    "返城前夜，老人把祖传的金刚钻埋进黄土，说：'等山河重光了，让它再见天日。'",
+    "来到2013年，海外拍卖会上出现一件所谓'战争遗珍'锔瓷瓶，日本藏家声称是他们的收藏。",
+    "这时，林家第四代——留学归来的李欢带着证据来了：老照片、银簪鉴定报告，还有她父亲凭记忆绘制的锔钉图谱。",
+    "当图谱投影与故宫星空完美重合的那一刻，全场肃然起敬——锔瓷的身世，不言自明。",
+    "最后来到2023年，在太行山的非遗研学营里，李欢把金刚钻交到年轻人手中。",
+    "她说：'我的老师说过——每一代人都要修补时代的裂缝。如今要锔合的不再是瓷器，是千年不断的文脉。'",
+    "镜头扫过今天的中国：锔瓷灯饰点亮古城，航天材料融合传统工艺，中国修复标准走向世界……",
+    "而那尊锔瓶始终静立博物馆中，锔钉如星河闪烁，仿佛在说：",
+    "'破碎不是结束，而是新生的开始——这是我们民族在裂痕中坚守、在破碎中重圆的智慧。'",
+    "这，就是锔瓷告诉世界的答案。"
+];
+
+let currentStoryIndex = 0;
+
+// 开场剧情控制
+function initStoryIntro() {
+    currentStoryIndex = 0;
+    updateStoryText();
+}
+
+function nextStoryLine() {
+    if (currentStoryIndex < storyLines.length - 1) {
+        currentStoryIndex++;
+        updateStoryText();
+    } else {
+        // 剧情结束，进入主菜单
+        showMainMenu();
+    }
+}
+
+function showMainMenu() {
+    // 隐藏开场剧情
+    document.getElementById('story-intro').classList.remove('active');
+    // 显示主菜单
+    document.getElementById('main-menu').classList.add('active');
+}
+
+function updateStoryText() {
+    const storyText = document.getElementById('story-text');
+    if (storyText) {
+        // 添加淡出效果
+        storyText.style.opacity = '0';
+        
+        setTimeout(() => {
+            storyText.textContent = storyLines[currentStoryIndex];
+            storyText.style.opacity = '1';
+        }, 300);
+    }
+}
+
+function skipStory() {
+    // 跳过剧情，直接进入主菜单
+    if (gameState) {
+        gameState.playSound('click');
+    }
+    showMainMenu();
+    showMessage('已跳过开场剧情');
+}
+
+function showMainMenu() {
+    document.getElementById('story-intro').classList.remove('active');
+    document.getElementById('main-menu').classList.add('active');
+}
+
 // 游戏状态管理
 class GameState {
     constructor() {
@@ -18,7 +94,12 @@ class GameState {
     init() {
         this.setupEventListeners();
         this.updateProgress();
-        this.initStep1();
+        // 初始化开场剧情而不是直接进入第一步
+        this.initStoryIntro();
+    }
+
+    initStoryIntro() {
+        initStoryIntro();
     }
 
     initAudio() {
@@ -538,6 +619,11 @@ function startStep1() {
     if (intro && content) {
         intro.classList.remove('active');
         content.classList.remove('hidden');
+        
+        // 初始化第一步的交互
+        if (gameState && gameState.initStep1) {
+            gameState.initStep1();
+        }
     }
     
     gameState.playSound('click');
@@ -638,10 +724,9 @@ function startStep8() {
 function initCleaningStep() {
     // 初始化清洗步骤
     const piecesContainer = document.getElementById('pieces-container');
-    const assemblyArea = document.getElementById('assembly-area');
     const toolBtns = document.querySelectorAll('.tool-btn');
     
-    if (piecesContainer && assemblyArea) {
+    if (piecesContainer) {
         let isVesselCleaned = false;
         let currentTool = 'brush';
         let brushingComplete = false;
@@ -658,7 +743,6 @@ function initCleaningStep() {
         
         // 清空容器并设置初始状态
         piecesContainer.innerHTML = '';
-        assemblyArea.innerHTML = '<p>点击器物进行清洗，清洗完成后会自动归位</p>';
         
         // 创建有裂缝的完整器物
         const vessel = document.createElement('div');
@@ -737,35 +821,39 @@ function initCleaningStep() {
                     vessel.style.boxShadow = '0 0 20px rgba(135, 206, 235, 0.5)';
                     waterEffect.remove();
                     
-                    // 自动归位到中央区域
+                    // 显示清洗完成的器物
                     setTimeout(() => {
-                        vessel.remove();
-                        assemblyArea.innerHTML = `
-                            <div style="
-                                width: 250px; 
-                                height: 250px; 
-                                background: url('images/damaged.jpg') center/cover no-repeat; 
-                                border-radius: 15px; 
-                                animation: glow 2s infinite;
-                                border: 3px solid #FFD700;
-                                box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
-                                margin: 20px auto;
-                                position: relative;
-                            ">
-                                <div style="
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    right: 0;
-                                    bottom: 0;
-                                    background: linear-gradient(45deg, transparent 40%, rgba(255,215,0,0.3) 42%, rgba(255,215,0,0.3) 44%, transparent 46%),
-                                                linear-gradient(-30deg, transparent 60%, rgba(255,215,0,0.2) 62%, rgba(255,215,0,0.2) 64%, transparent 66%);
-                                    border-radius: 15px;
-                                    pointer-events: none;
-                                "></div>
-                            </div>
+                        // 更新器物样式为清洗完成状态
+                        vessel.style.cssText = `
+                            width: 250px;
+                            height: 250px;
+                            background: url('images/damaged.jpg') center/cover no-repeat;
+                            border-radius: 15px;
+                            margin: 20px auto;
+                            animation: glow 2s infinite;
+                            border: 3px solid #FFD700;
+                            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+                            position: relative;
+                            cursor: default;
                         `;
-                        showMessage('器物清洗完成并已归位！裂缝清晰可见，准备进入下一步修复。');
+                        
+                        // 更新裂缝效果为金色
+                        const crackOverlay = vessel.querySelector('div');
+                        if (crackOverlay) {
+                            crackOverlay.style.cssText = `
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background: linear-gradient(45deg, transparent 40%, rgba(255,215,0,0.3) 42%, rgba(255,215,0,0.3) 44%, transparent 46%),
+                                            linear-gradient(-30deg, transparent 60%, rgba(255,215,0,0.2) 62%, rgba(255,215,0,0.2) 64%, transparent 66%);
+                                border-radius: 15px;
+                                pointer-events: none;
+                            `;
+                        }
+                        
+                        showMessage('器物清洗完成！裂缝清晰可见，准备进入下一步修复。');
                         document.getElementById('complete-btn').style.display = 'inline-block';
                     }, 800);
                 }, 500);
@@ -880,29 +968,60 @@ function initMarkingStep() {
     const canvas = document.getElementById('marking-canvas');
     const ctx = canvas.getContext('2d');
     
+    // 检测移动设备
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     if (canvas && ctx) {
+        // 移动端优化
+        if (isMobile) {
+            canvas.style.touchAction = 'none';
+        }
+        
         let markCount = 0;
         const maxMarks = 6;
         const markPositions = []; // 存储标记位置
         
-        canvas.addEventListener('click', (e) => {
+        // 获取正确的坐标位置
+        function getEventPos(e) {
             const rect = canvas.getBoundingClientRect();
-            // 计算相对于canvas的精确坐标
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
+            let clientX, clientY;
+            
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            // 修复移动端坐标计算
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+        
+        function handleMark(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const pos = getEventPos(e);
             
             if (markCount < maxMarks) {
                 gameState.playSound('click');
                 
-                // 存储标记位置
-                markPositions.push({x: x, y: y, id: markCount + 1});
+                // 移动端触觉反馈
+                if (isMobile && navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
                 
-                // 绘制标记点 - 增大标记点
+                // 存储标记位置
+                markPositions.push({x: pos.x, y: pos.y, id: markCount + 1});
+                
+                // 绘制标记点 - 移动端增大标记点
                 ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
-                ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                ctx.arc(pos.x, pos.y, isMobile ? 12 : 8, 0, 2 * Math.PI);
                 ctx.fill();
                 
                 // 添加边框
@@ -912,9 +1031,9 @@ function initMarkingStep() {
                 
                 // 添加编号
                 ctx.fillStyle = '#000';
-                ctx.font = 'bold 14px Arial';
+                ctx.font = isMobile ? 'bold 16px Arial' : 'bold 14px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(markCount + 1, x, y + 5);
+                ctx.fillText(markCount + 1, pos.x, pos.y + (isMobile ? 6 : 5));
                 
                 markCount++;
                 
@@ -926,7 +1045,11 @@ function initMarkingStep() {
                     gameState.markPositions = markPositions;
                 }
             }
-        });
+        }
+        
+        // 添加事件监听器
+        canvas.addEventListener('click', handleMark);
+        canvas.addEventListener('touchstart', handleMark);
     }
 }
 
@@ -1359,41 +1482,280 @@ function initInstallationStep() {
         const drilledPositions = gameState.drilledPositions || [];
         const maxInstalls = Math.max(drilledPositions.length, 3); // 使用实际钻孔数量
         
+        // 检测移动设备
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         ('ontouchstart' in window) || 
+                         (navigator.maxTouchPoints > 0) ||
+                         window.innerWidth <= 768;
+        
+        // 移动端优化提示
+        if (isMobile) {
+            showMessage('📱 移动端优化：锔钉更大，检测范围扩大到120px，更易操作！');
+        }
+        
         // 创建锔钉库存 - 根据实际需要的数量，支持拖拽
         for (let i = 0; i < maxInstalls; i++) {
             const staple = document.createElement('div');
             staple.style.cssText = `
-                width: 40px;
-                height: 20px;
+                width: ${isMobile ? '60px' : '40px'};
+                height: ${isMobile ? '30px' : '20px'};
                 background: linear-gradient(90deg, #CD7F32, #B87333);
                 border-radius: 10px;
-                margin: 10px auto;
+                margin: ${isMobile ? '15px' : '10px'} auto;
                 cursor: grab;
                 transition: all 0.3s ease;
                 position: relative;
                 z-index: 10;
+                border: ${isMobile ? '3px solid #FFD700' : '2px solid #8B4513'};
+                box-shadow: ${isMobile ? '0 0 15px rgba(255, 215, 0, 0.5)' : 'none'};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: ${isMobile ? '14px' : '12px'};
+                color: #FFF;
+                font-weight: bold;
             `;
+            staple.innerHTML = `钉${i + 1}`;
             staple.dataset.used = 'false';
-            staple.draggable = true;
+            staple.dataset.stapleIndex = i;
+            staple.draggable = !isMobile; // 移动端不使用HTML5拖拽
             
-            // 拖拽开始
-            staple.addEventListener('dragstart', (e) => {
-                if (staple.dataset.used === 'false') {
-                    gameState.playSound('click');
-                    staple.style.cursor = 'grabbing';
-                    staple.style.opacity = '0.8';
-                    e.dataTransfer.setData('text/plain', i); // 传递锔钉索引
-                    showMessage('拖拽锔钉到孔洞上进行安装！');
-                } else {
-                    e.preventDefault(); // 阻止已使用的锔钉被拖拽
-                }
-            });
-            
-            // 拖拽结束
-            staple.addEventListener('dragend', (e) => {
-                staple.style.cursor = 'grab';
-                staple.style.opacity = '1';
-            });
+            if (isMobile) {
+                // 移动端触摸拖拽 - 完全重写，更稳定
+                let isDragging = false;
+                let dragElement = null;
+                let startX = 0;
+                let startY = 0;
+
+                staple.addEventListener('touchstart', (e) => {
+                    if (staple.dataset.used === 'false') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        isDragging = true;
+                        const touch = e.touches[0];
+                        startX = touch.clientX;
+                        startY = touch.clientY;
+                        
+                        gameState.playSound('click');
+                        
+                        // 创建更明显的拖拽副本
+                        dragElement = staple.cloneNode(true);
+                        dragElement.style.cssText = `
+                            position: fixed;
+                            width: 80px;
+                            height: 40px;
+                            background: linear-gradient(90deg, #FFD700, #FFA500);
+                            border-radius: 15px;
+                            z-index: 99999;
+                            pointer-events: none;
+                            opacity: 0.9;
+                            transform: scale(1.5);
+                            left: ${touch.clientX - 40}px;
+                            top: ${touch.clientY - 20}px;
+                            border: 4px solid #FF6B6B;
+                            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            color: #8B4513;
+                            font-weight: bold;
+                            animation: pulse 0.5s infinite;
+                        `;
+                        document.body.appendChild(dragElement);
+                        
+                        staple.style.opacity = '0.3';
+                        staple.style.transform = 'scale(0.8)';
+                        
+                        // 高亮所有可用的安装点
+                        const installPoints = document.querySelectorAll('[data-installed="false"]');
+                        installPoints.forEach(point => {
+                            point.style.background = '#FFD700';
+                            point.style.transform = 'scale(1.5)';
+                            point.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+                            point.style.border = '4px solid #FF6B6B';
+                            point.style.animation = 'pulse 1s infinite';
+                        });
+                        
+                        showMessage('🎯 拖拽锔钉到任意闪烁的孔洞！检测范围120px');
+                        
+                        // 强烈的触觉反馈
+                        if (navigator.vibrate) {
+                            navigator.vibrate([100, 50, 100]);
+                        }
+                    }
+                }, { passive: false });
+
+                const handleTouchMove = (e) => {
+                    if (isDragging && dragElement) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const touch = e.touches[0];
+                        
+                        // 更新拖拽元素位置
+                        dragElement.style.left = (touch.clientX - 40) + 'px';
+                        dragElement.style.top = (touch.clientY - 20) + 'px';
+                        
+                        // 检查所有安装点 - 超大检测范围
+                        const installPoints = document.querySelectorAll('[data-installed="false"]');
+                        let nearPoint = false;
+                        
+                        installPoints.forEach(point => {
+                            const rect = point.getBoundingClientRect();
+                            const centerX = rect.left + rect.width / 2;
+                            const centerY = rect.top + rect.height / 2;
+                            const distance = Math.sqrt(
+                                Math.pow(touch.clientX - centerX, 2) + 
+                                Math.pow(touch.clientY - centerY, 2)
+                            );
+                            
+                            // 超大检测范围 - 120px
+                            if (distance < 120) {
+                                point.style.background = '#00FF00';
+                                point.style.transform = 'scale(2)';
+                                point.style.boxShadow = '0 0 40px rgba(0, 255, 0, 1)';
+                                point.style.border = '6px solid #00FF00';
+                                nearPoint = true;
+                                
+                                // 更新拖拽元素样式表示可以放置
+                                dragElement.style.background = 'linear-gradient(90deg, #00FF00, #32CD32)';
+                                dragElement.style.border = '4px solid #00FF00';
+                            } else {
+                                point.style.background = '#FFD700';
+                                point.style.transform = 'scale(1.5)';
+                                point.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+                                point.style.border = '4px solid #FF6B6B';
+                            }
+                        });
+                        
+                        // 如果不在任何点附近，恢复拖拽元素原始样式
+                        if (!nearPoint) {
+                            dragElement.style.background = 'linear-gradient(90deg, #FFD700, #FFA500)';
+                            dragElement.style.border = '4px solid #FF6B6B';
+                        }
+                    }
+                };
+
+                const handleTouchEnd = (e) => {
+                    if (isDragging && dragElement) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        isDragging = false;
+                        const touch = e.changedTouches[0];
+                        let installed = false;
+                        
+                        // 检查是否成功安装
+                        const installPoints = document.querySelectorAll('[data-installed="false"]');
+                        installPoints.forEach(point => {
+                            const rect = point.getBoundingClientRect();
+                            const centerX = rect.left + rect.width / 2;
+                            const centerY = rect.top + rect.height / 2;
+                            const distance = Math.sqrt(
+                                Math.pow(touch.clientX - centerX, 2) + 
+                                Math.pow(touch.clientY - centerY, 2)
+                            );
+                            
+                            // 超大安装范围 - 120px
+                            if (distance < 120 && !installed) {
+                                // 安装成功
+                                staple.style.opacity = '0.3';
+                                staple.style.transform = 'scale(0.6)';
+                                staple.style.cursor = 'not-allowed';
+                                staple.style.background = '#666';
+                                staple.dataset.used = 'true';
+                                staple.innerHTML = '已用';
+                                
+                                point.style.background = '#32CD32';
+                                point.style.transform = 'scale(1.8)';
+                                point.style.animation = 'none';
+                                point.dataset.installed = 'true';
+                                installCount++;
+                                
+                                // 安装成功动画
+                                setTimeout(() => {
+                                    point.style.transform = 'scale(1.2)';
+                                    point.innerHTML = '✅';
+                                    point.style.fontSize = '20px';
+                                    point.style.color = '#FFF';
+                                    point.style.background = '#32CD32';
+                                    
+                                    const remaining = drilledPositions.length - installCount;
+                                    if (remaining > 0) {
+                                        showMessage(`🎉 锔钉安装成功！还需安装 ${remaining} 个锔钉。`);
+                                    } else {
+                                        showMessage('🎉 所有锔钉安装完成！瓷器结构已加固！');
+                                        document.getElementById('complete-btn').style.display = 'inline-block';
+                                    }
+                                }, 300);
+                                
+                                installed = true;
+                                
+                                // 成功的强烈触觉反馈
+                                if (navigator.vibrate) {
+                                    navigator.vibrate([200, 100, 200, 100, 300]);
+                                }
+                            }
+                        });
+                        
+                        // 重置所有安装点样式
+                        const allInstallPoints = document.querySelectorAll('[data-installed]');
+                        allInstallPoints.forEach(point => {
+                            if (point.dataset.installed === 'false') {
+                                point.style.background = '#654321';
+                                point.style.transform = 'scale(1)';
+                                point.style.boxShadow = 'none';
+                                point.style.border = '2px solid #8B4513';
+                                point.style.animation = 'none';
+                            }
+                        });
+                        
+                        if (!installed) {
+                            // 安装失败，恢复锔钉状态
+                            staple.style.opacity = '1';
+                            staple.style.transform = 'scale(1)';
+                            showMessage('❌ 未成功安装！请将锔钉拖拽到孔洞附近（120px范围内）');
+                            
+                            // 失败触觉反馈
+                            if (navigator.vibrate) {
+                                navigator.vibrate([100, 100, 100]);
+                            }
+                        }
+                        
+                        // 清理拖拽元素
+                        if (dragElement && dragElement.parentNode) {
+                            document.body.removeChild(dragElement);
+                            dragElement = null;
+                        }
+                    }
+                };
+
+                // 绑定全局触摸事件
+                document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                document.addEventListener('touchend', handleTouchEnd, { passive: false });
+                document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+                
+            } else {
+                // 桌面端拖拽保持不变
+                staple.addEventListener('dragstart', (e) => {
+                    if (staple.dataset.used === 'false') {
+                        gameState.playSound('click');
+                        staple.style.cursor = 'grabbing';
+                        staple.style.opacity = '0.8';
+                        e.dataTransfer.setData('text/plain', i);
+                        showMessage('拖拽锔钉到孔洞上进行安装！');
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+                
+                staple.addEventListener('dragend', (e) => {
+                    staple.style.cursor = 'grab';
+                    staple.style.opacity = '1';
+                });
+            }
             
             staplesInventory.appendChild(staple);
         }
@@ -1416,26 +1778,33 @@ function initInstallationStep() {
         
         function createInstallPoint(x, y, index) {
             const installPoint = document.createElement('div');
+            
+            // 移动端使用更大的安装点
+            const pointSize = isMobile ? 50 : 25;
+            const fontSize = isMobile ? 20 : 12;
+            
             installPoint.style.cssText = `
                 position: absolute;
-                width: 25px;
-                height: 25px;
+                width: ${pointSize}px;
+                height: ${pointSize}px;
                 background: #654321;
                 border-radius: 50%;
-                left: ${x - 12}px;
-                top: ${y - 12}px;
+                left: ${x - pointSize/2}px;
+                top: ${y - pointSize/2}px;
                 cursor: pointer;
-                border: 2px solid #8B4513;
+                border: ${isMobile ? '4px solid #FFD700' : '2px solid #8B4513'};
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 12px;
+                font-size: ${fontSize}px;
                 color: #FFD700;
                 font-weight: bold;
                 transition: all 0.3s ease;
+                box-shadow: ${isMobile ? '0 0 15px rgba(255, 215, 0, 0.5)' : 'none'};
+                z-index: 5;
             `;
             installPoint.dataset.installed = 'false';
-            installPoint.innerHTML = '○';
+            installPoint.innerHTML = isMobile ? `孔${index + 1}` : '○';
             
             // 拖拽放置事件
             installPoint.addEventListener('dragover', (e) => {
@@ -1953,104 +2322,66 @@ function initKintsugiStep() {
 function initFinishingStep() {
     // 初始化抛光步骤
     const completedVessel = document.getElementById('completed-vessel');
-    const polishingArea = document.querySelector('.polishing-area');
+    const polishButton = document.getElementById('polish-button');
     
-    if (completedVessel && polishingArea) {
-        let polishCount = 0;
-        const maxPolish = 8;
+    if (completedVessel && polishButton) {
         let isPolishing = false;
         
-        // 创建抛光区域
-        for (let i = 0; i < maxPolish; i++) {
-            const polishSpot = document.createElement('div');
-            polishSpot.style.cssText = `
-                position: absolute;
-                width: 40px;
-                height: 40px;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                left: ${100 + (i % 4) * 60}px;
-                top: ${120 + Math.floor(i / 4) * 60}px;
-                cursor: pointer;
-                border: 2px dashed #FFF;
-                transition: all 0.3s ease;
-                animation: pulse 2s infinite;
-            `;
-            polishSpot.dataset.polished = 'false';
-            
-            // 鼠标按下开始抛光
-            polishSpot.addEventListener('mousedown', (e) => {
-                if (polishSpot.dataset.polished === 'true') return;
+        // 移动端检测
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         ('ontouchstart' in window) || 
+                         (navigator.maxTouchPoints > 0);
+
+        polishButton.addEventListener('click', function() {
+            if (isPolishing) return;
+
+            isPolishing = true;
+            polishButton.classList.add('polishing');
+            polishButton.innerHTML = '<span class="polish-icon">⏳</span>抛光中...';
+            polishButton.disabled = true;
+
+            gameState.playSound('brush');
+            showMessage('正在进行最终抛光，让器物重现光泽...');
+
+            // 移动端触觉反馈
+            if (isMobile && navigator.vibrate) {
+                navigator.vibrate([200, 100, 200]);
+            }
+
+            let progress = 0;
+            const polishInterval = setInterval(() => {
+                progress += 10;
                 
-                isPolishing = true;
-                let polishProgress = 0;
-                
-                const polishInterval = setInterval(() => {
-                    if (isPolishing) {
-                        polishProgress += 5;
-                        polishSpot.style.background = `rgba(255, 215, 0, ${polishProgress/100})`;
-                        polishSpot.style.transform = `scale(${1 + polishProgress/200})`;
-                        
-                        // 播放抛光音效
-                        if (polishProgress % 20 === 0) {
-                            gameState.playSound('brush');
-                        }
-                        
-                        if (polishProgress >= 100) {
-                            // 抛光完成
-                            polishSpot.style.background = 'rgba(255, 215, 0, 0.8)';
-                            polishSpot.style.border = '2px solid #FFD700';
-                            polishSpot.style.animation = 'none';
-                            polishSpot.style.boxShadow = '0 0 15px #FFD700';
-                            polishSpot.dataset.polished = 'true';
-                            polishSpot.innerHTML = '✨';
-                            polishSpot.style.fontSize = '20px';
-                            polishSpot.style.textAlign = 'center';
-                            polishSpot.style.lineHeight = '36px';
-                            polishCount++;
-                            
-                            clearInterval(polishInterval);
-                            isPolishing = false;
-                            
-                            // 增加整体光泽效果
-                            const brightness = 1 + (polishCount * 0.15);
-                            completedVessel.style.filter = `brightness(${brightness}) contrast(1.3) saturate(1.2)`;
-                            completedVessel.style.boxShadow = `0 0 ${polishCount * 5}px rgba(255, 215, 0, 0.6)`;
-                            
-                            showMessage(`抛光进度：${polishCount}/${maxPolish} - 器物越来越光亮！`);
-                            
-                            if (polishCount >= maxPolish) {
-                                setTimeout(() => {
-                                    showMessage('抛光完成！器物焕然一新，金光闪闪！');
-                                    completedVessel.style.animation = 'glow 2s infinite';
-                                    setTimeout(() => {
-                                        showFinalPresentation();
-                                    }, 1000);
-                                }, 500);
-                            }
-                        }
-                    }
-                }, 50);
-                
-                // 鼠标松开停止抛光
-                const stopPolishing = () => {
+                // 逐渐增加光泽效果
+                const brightness = 1 + (progress * 0.02);
+                completedVessel.style.filter = `brightness(${brightness}) contrast(1.3) saturate(1.2)`;
+                completedVessel.style.boxShadow = `0 0 ${progress}px rgba(255, 215, 0, 0.6)`;
+
+                if (progress >= 100) {
                     clearInterval(polishInterval);
-                    isPolishing = false;
-                    if (polishSpot.dataset.polished === 'false') {
-                        polishSpot.style.transform = 'scale(1)';
-                        polishSpot.style.background = 'rgba(255, 255, 255, 0.3)';
-                        showMessage('需要持续按住来抛光这个区域！');
+                    
+                    // 抛光完成
+                    polishButton.classList.remove('polishing');
+                    polishButton.classList.add('completed');
+                    polishButton.innerHTML = '<span class="polish-icon">✨</span>抛光完成';
+                    completedVessel.style.animation = 'glow 2s infinite';
+                    
+                    showMessage('🎉 抛光完成！器物焕然一新，金光闪闪！');
+                    
+                    // 移动端成功反馈
+                    if (isMobile && navigator.vibrate) {
+                        navigator.vibrate([100, 50, 100, 50, 200]);
                     }
-                };
-                
-                polishSpot.addEventListener('mouseup', stopPolishing);
-                polishSpot.addEventListener('mouseleave', stopPolishing);
-            }); // 这里有多余的 });
-            
-            polishingArea.appendChild(polishSpot);
-        }
-        
-        showMessage('用软布仔细抛光每个区域，让器物重现光泽！');
+                    
+                    setTimeout(() => {
+                        showMessage('🎉 所有修复工作完成！器物重获新生！');
+                        document.getElementById('complete-btn').style.display = 'inline-block';
+                    }, 2000);
+                }
+            }, 100);
+        });
+
+        showMessage('点击按钮完成最终抛光，让器物重现光泽！');
     }
 }
 
@@ -2175,33 +2506,18 @@ function toggleHints() {
 }
 
 function backToMenu() {
-    // 隐藏所有屏幕
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    
-    // 隐藏最终展示
-    const finalPresentation = document.getElementById('final-presentation');
-    if (finalPresentation) {
-        finalPresentation.style.display = 'none';
-    }
-    
-    // 显示步骤控制按钮
-    const stepControls = document.querySelector('.step-controls');
-    if (stepControls) {
-        stepControls.style.display = 'flex';
-    }
-    
-    // 显示主菜单
-    document.getElementById('main-menu').classList.add('active');
-    
-    // 重置游戏状态
+    // 播放点击音效
     if (gameState) {
-        gameState.currentStep = 1;
-        gameState.updateProgress();
-        gameState.updateStepTitle();
         gameState.playSound('click');
     }
+    
+    // 显示提示信息
+    showMessage('正在返回主菜单...');
+    
+    // 延迟一下让用户看到提示，然后刷新页面
+    setTimeout(() => {
+        window.location.reload();
+    }, 500);
 }
 
 function restartGame() {
@@ -2318,12 +2634,14 @@ function resetAllStepStates() {
 }
 
 function openLetter() {
-    const storyText = document.getElementById('story-text');
+    console.log('openLetter函数被调用'); // 调试信息
+    const storyText = document.getElementById('step1-story-text');
     if (storyText) {
+        console.log('找到step1-story-text元素'); // 调试信息
         gameState.playSound('click');
         storyText.classList.remove('hidden');
         storyText.innerHTML = `
-            <div style="background: rgba(255, 255, 255, 0.95); color: #000; padding: 30px; border-radius: 15px; font-size: 1.4em; font-weight: bold; line-height: 1.8;">
+            <div style="background: rgba(255, 255, 255, 0.95); color: #000; padding: 30px; border-radius: 15px; font-size: 1.4em; font-weight: bold; line-height: 1.8; margin-top: 20px;">
                 <h3 style="color: #8B4513; margin-bottom: 20px;">委托信</h3>
                 <p style="color: #000;">尊敬的修复大师：</p>
                 <p style="color: #000;">这是祖母留下的茶碗，承载着三代人的回忆。</p>
@@ -2336,8 +2654,13 @@ function openLetter() {
         
         setTimeout(() => {
             showMessage('了解了器物的故事，现在开始修复之旅！');
-            document.getElementById('complete-btn').style.display = 'inline-block';
+            const completeBtn = document.getElementById('complete-btn');
+            if (completeBtn) {
+                completeBtn.style.display = 'inline-block';
+            }
         }, 2000);
+    } else {
+        console.log('未找到step1-story-text元素'); // 调试信息
     }
 }
 
@@ -2476,15 +2799,81 @@ let gameState;
 document.addEventListener('DOMContentLoaded', () => {
     gameState = new GameState();
     
-    // 确保页面加载时只显示主菜单
+    // 确保页面加载时先显示开场剧情
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
-    document.getElementById('main-menu').classList.add('active');
+    document.getElementById('story-intro').classList.add('active');
+    
+    // 初始化开场剧情
+    initStoryIntro();
     
     // 初始化音乐控制器
     initMusicController();
+    
+    // 确保所有步骤的事件监听器都已设置
+    setupStepEventListeners();
 });
+
+function setupStepEventListeners() {
+    // 检测是否为移动设备
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    
+    // 确保第一步的启封功能正常工作
+    const boxLock = document.getElementById('box-lock');
+    if (boxLock && gameState) {
+        // 移除可能存在的旧监听器
+        boxLock.replaceWith(boxLock.cloneNode(true));
+        const newBoxLock = document.getElementById('box-lock');
+        
+        // 为移动端添加触摸事件
+        const handleUnlock = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            gameState.playSound('unlock');
+            
+            // 移动端触觉反馈
+            if (isMobile && navigator.vibrate) {
+                navigator.vibrate(100);
+            }
+            
+            // 开锁动画
+            newBoxLock.style.transform = 'translate(-50%, -50%) rotate(90deg)';
+            newBoxLock.style.opacity = '0';
+            
+            setTimeout(() => {
+                newBoxLock.style.display = 'none';
+                const boxContent = document.getElementById('box-content');
+                if (boxContent) {
+                    boxContent.classList.remove('hidden');
+                    boxContent.style.animation = 'slideIn 0.5s ease-out';
+                    
+                    // 确保信封点击事件正常工作
+                    const letter = document.getElementById('letter');
+                    if (letter) {
+                        console.log('设置信封点击事件'); // 调试信息
+                        letter.style.cursor = 'pointer';
+                        letter.style.border = '3px solid #FFD700'; // 添加金色边框使其更明显
+                        letter.title = '点击查看委托信'; // 添加提示
+                        
+                        // 移动端额外的视觉提示
+                        if (isMobile) {
+                            letter.style.boxShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                            // 添加脉冲动画提示
+                            letter.style.animation = 'pulse 2s infinite';
+                        }
+                    }
+                }
+            }, 300);
+        };
+        
+        // 同时绑定点击和触摸事件
+        newBoxLock.addEventListener('click', handleUnlock);
+        if (isMobile) {
+            newBoxLock.addEventListener('touchstart', handleUnlock);
+        }
+    }
+}
 
 function initMusicController() {
     // 监听背景音乐播放状态变化
