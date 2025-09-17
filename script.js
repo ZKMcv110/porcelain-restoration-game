@@ -1769,7 +1769,7 @@ function initInstallationStep() {
             staplesInventory.appendChild(staple);
         }
         
-        // 使用之前钻孔步骤的实际位置创建安装点
+        // 使用之前钻孔步骤的实际位置创建安装点 - 修复坐标转换
         if (drilledPositions.length === 0) {
             // 如果没有钻孔位置数据，使用默认位置
             showMessage('未找到钻孔位置，使用默认安装点。');
@@ -1777,11 +1777,38 @@ function initInstallationStep() {
                 createInstallPoint(120 + i * 60, 150 + i * 20, i);
             }
         } else {
-            // 使用所有实际钻孔位置
+            // 使用所有实际钻孔位置，但需要转换坐标系
             showMessage(`在 ${drilledPositions.length} 个钻孔位置安装锔钉。`);
+            
+            // 获取vessel-holes容器的当前尺寸
+            const vesselRect = vesselHoles.getBoundingClientRect();
+            
             for (let i = 0; i < drilledPositions.length; i++) {
                 const pos = drilledPositions[i];
-                createInstallPoint(pos.x, pos.y, i);
+                
+                // 从gameState.markPositions获取原始标记信息进行坐标转换
+                const originalMark = gameState.markPositions ? gameState.markPositions.find(m => m.id === pos.id) : null;
+                
+                let displayX = pos.x;
+                let displayY = pos.y;
+                
+                if (originalMark && originalMark.canvasWidth && originalMark.rectWidth) {
+                    // 使用保存的画布信息重新计算相对于vessel-holes的位置
+                    const scaleX = vesselRect.width / originalMark.rectWidth;
+                    const scaleY = vesselRect.height / originalMark.rectHeight;
+                    displayX = originalMark.screenX * scaleX;
+                    displayY = originalMark.screenY * scaleY;
+                } else {
+                    // 回退方案：假设vessel-holes与原始画布尺寸相同
+                    // 这里可能需要根据实际情况调整比例
+                    const assumedCanvasWidth = 400;
+                    const assumedCanvasHeight = 300;
+                    displayX = (pos.x / assumedCanvasWidth) * vesselRect.width;
+                    displayY = (pos.y / assumedCanvasHeight) * vesselRect.height;
+                }
+                
+                createInstallPoint(displayX, displayY, i);
+                console.log(`安装点 ${pos.id}: 钻孔位置(${pos.x}, ${pos.y}) -> 显示位置(${displayX}, ${displayY})`);
             }
         }
         
