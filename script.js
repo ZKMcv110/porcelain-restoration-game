@@ -920,8 +920,9 @@ function initMarkingStep() {
     const canvas = document.getElementById('marking-canvas');
     const ctx = canvas.getContext('2d');
     
-    // 检测移动设备
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // 检测移动设备 - 更准确的检测方法
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                     (window.innerWidth <= 768 && 'ontouchstart' in window);
     
     if (canvas && ctx) {
         // 移动端优化
@@ -1793,22 +1794,46 @@ function initInstallationStep() {
                 let displayY = pos.y;
                 
                 if (originalMark && originalMark.canvasWidth && originalMark.rectWidth) {
-                    // 使用保存的画布信息重新计算相对于vessel-holes的位置
-                    const scaleX = vesselRect.width / originalMark.rectWidth;
-                    const scaleY = vesselRect.height / originalMark.rectHeight;
-                    displayX = originalMark.screenX * scaleX;
-                    displayY = originalMark.screenY * scaleY;
+                    // 移动端需要特殊处理坐标转换
+                    if (isMobile) {
+                        // 移动端：使用相对比例进行转换
+                        const relativeX = originalMark.x / originalMark.canvasWidth;
+                        const relativeY = originalMark.y / originalMark.canvasHeight;
+                        displayX = relativeX * vesselRect.width;
+                        displayY = relativeY * vesselRect.height;
+                        
+                        console.log(`移动端坐标转换 ${pos.id}: Canvas(${originalMark.x}, ${originalMark.y}) 相对位置(${relativeX.toFixed(3)}, ${relativeY.toFixed(3)}) -> 显示(${displayX.toFixed(1)}, ${displayY.toFixed(1)})`);
+                    } else {
+                        // 桌面端：使用屏幕坐标转换
+                        const scaleX = vesselRect.width / originalMark.rectWidth;
+                        const scaleY = vesselRect.height / originalMark.rectHeight;
+                        displayX = originalMark.screenX * scaleX;
+                        displayY = originalMark.screenY * scaleY;
+                        
+                        console.log(`桌面端坐标转换 ${pos.id}: 屏幕(${originalMark.screenX}, ${originalMark.screenY}) 缩放(${scaleX.toFixed(3)}, ${scaleY.toFixed(3)}) -> 显示(${displayX.toFixed(1)}, ${displayY.toFixed(1)})`);
+                    }
                 } else {
-                    // 回退方案：假设vessel-holes与原始画布尺寸相同
-                    // 这里可能需要根据实际情况调整比例
-                    const assumedCanvasWidth = 400;
-                    const assumedCanvasHeight = 300;
-                    displayX = (pos.x / assumedCanvasWidth) * vesselRect.width;
-                    displayY = (pos.y / assumedCanvasHeight) * vesselRect.height;
+                    // 回退方案：使用相对比例转换
+                    const assumedCanvasWidth = isMobile ? 350 : 400;
+                    const assumedCanvasHeight = isMobile ? 250 : 300;
+                    const relativeX = pos.x / assumedCanvasWidth;
+                    const relativeY = pos.y / assumedCanvasHeight;
+                    displayX = relativeX * vesselRect.width;
+                    displayY = relativeY * vesselRect.height;
+                    
+                    console.log(`回退方案坐标转换 ${pos.id}: 原始(${pos.x}, ${pos.y}) 相对(${relativeX.toFixed(3)}, ${relativeY.toFixed(3)}) -> 显示(${displayX.toFixed(1)}, ${displayY.toFixed(1)})`);
                 }
                 
                 createInstallPoint(displayX, displayY, i);
-                console.log(`安装点 ${pos.id}: 钻孔位置(${pos.x}, ${pos.y}) -> 显示位置(${displayX}, ${displayY})`);
+                
+                // 移动端额外调试信息
+                if (isMobile) {
+                    console.log(`📱 移动端调试 - 安装点 ${pos.id}:`);
+                    console.log(`  - 原始Canvas坐标: (${pos.x}, ${pos.y})`);
+                    console.log(`  - vessel-holes容器尺寸: ${vesselRect.width}x${vesselRect.height}`);
+                    console.log(`  - 最终显示位置: (${displayX.toFixed(1)}, ${displayY.toFixed(1)})`);
+                    console.log(`  - 屏幕信息: ${window.innerWidth}x${window.innerHeight}, devicePixelRatio: ${window.devicePixelRatio}`);
+                }
             }
         }
         
