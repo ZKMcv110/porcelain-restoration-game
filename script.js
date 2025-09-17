@@ -900,55 +900,7 @@ function initCleaningStep() {
     }
 }
 
-function initMarkingStep() {
-    // 保持原有的标记步骤代码不变
-    const canvas = document.getElementById('marking-canvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-            // 标记步骤的原有逻辑保持不变
-            let markCount = 0;
-            const maxMarks = 6;
-            const markPositions = [];
-            
-            canvas.addEventListener('click', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                const x = (e.clientX - rect.left) * scaleX;
-                const y = (e.clientY - rect.top) * scaleY;
-                
-                if (markCount < maxMarks) {
-                    gameState.playSound('click');
-                    
-                    markPositions.push({x: x, y: y, id: markCount + 1});
-                    
-                    ctx.fillStyle = '#FFD700';
-                    ctx.beginPath();
-                    ctx.arc(x, y, 8, 0, 2 * Math.PI);
-                    ctx.fill();
-                    
-                    ctx.strokeStyle = '#8B4513';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    ctx.fillStyle = '#000';
-                    ctx.font = 'bold 14px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(markCount + 1, x, y + 5);
-                    
-                    markCount++;
-                    
-                    if (markCount >= maxMarks) {
-                        showMessage('标记完成！所有钻孔位置已确定。');
-                        document.getElementById('complete-btn').style.display = 'inline-block';
-                        gameState.markPositions = markPositions;
-                    }
-                }
-            });
-        }
-    }
-}
+
 
 // 清洗步骤修改完成，移除了旧的碎片代码
 
@@ -981,7 +933,7 @@ function initMarkingStep() {
         const maxMarks = 6;
         const markPositions = []; // 存储标记位置
         
-        // 获取正确的坐标位置
+        // 获取正确的坐标位置 - 修复坐标转换问题
         function getEventPos(e) {
             const rect = canvas.getBoundingClientRect();
             let clientX, clientY;
@@ -994,10 +946,17 @@ function initMarkingStep() {
                 clientY = e.clientY;
             }
             
-            // 修复移动端坐标计算
+            // 确保坐标转换的一致性 - 使用相同的缩放逻辑
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
             return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height)
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY,
+                // 同时保存屏幕坐标用于后续步骤的一致性显示
+                screenX: clientX - rect.left,
+                screenY: clientY - rect.top,
+                canvasRect: rect
             };
         }
         
@@ -1015,8 +974,18 @@ function initMarkingStep() {
                     navigator.vibrate(50);
                 }
                 
-                // 存储标记位置
-                markPositions.push({x: pos.x, y: pos.y, id: markCount + 1});
+                // 存储标记位置 - 包含更多信息以确保后续步骤的一致性
+                markPositions.push({
+                    x: pos.x, 
+                    y: pos.y, 
+                    id: markCount + 1,
+                    screenX: pos.screenX,
+                    screenY: pos.screenY,
+                    canvasWidth: canvas.width,
+                    canvasHeight: canvas.height,
+                    rectWidth: pos.canvasRect.width,
+                    rectHeight: pos.canvasRect.height
+                });
                 
                 // 绘制标记点 - 移动端增大标记点
                 ctx.fillStyle = '#FFD700';
@@ -1043,6 +1012,9 @@ function initMarkingStep() {
                     
                     // 将标记位置存储到gameState中供下一步使用
                     gameState.markPositions = markPositions;
+                    
+                    // 调试信息
+                    console.log('标记位置已保存:', markPositions);
                 }
             }
         }
@@ -1077,9 +1049,27 @@ function initDrillingStep() {
             }
         }
         
-        // 根据标记位置创建钻孔目标点
+        // 根据标记位置创建钻孔目标点 - 修复坐标显示问题
         markPositions.forEach((mark, i) => {
             if (i >= 6) return; // 最多6个钻孔点
+            
+            // 获取钻孔目标容器的当前尺寸和位置
+            const targetRect = drillingTarget.getBoundingClientRect();
+            
+            // 计算正确的显示位置
+            let displayX = mark.x;
+            let displayY = mark.y;
+            
+            // 如果有保存的画布信息，使用它来重新计算位置
+            if (mark.canvasWidth && mark.rectWidth) {
+                // 计算缩放比例
+                const scaleX = targetRect.width / mark.rectWidth;
+                const scaleY = targetRect.height / mark.rectHeight;
+                
+                // 重新计算显示位置
+                displayX = mark.screenX * scaleX;
+                displayY = mark.screenY * scaleY;
+            }
             
             const target = document.createElement('div');
             target.style.cssText = `
@@ -1088,8 +1078,8 @@ function initDrillingStep() {
                 height: 40px;
                 background: #FFD700;
                 border-radius: 50%;
-                left: ${mark.x - 20}px;
-                top: ${mark.y - 20}px;
+                left: ${displayX - 20}px;
+                top: ${displayY - 20}px;
                 cursor: pointer;
                 border: 3px solid #8B4513;
                 box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -1100,6 +1090,9 @@ function initDrillingStep() {
                 color: #8B4513;
                 font-size: 14px;
             `;
+            
+            // 调试信息
+            console.log(`钻孔点 ${mark.id}: 原始Canvas(${mark.x}, ${mark.y}) 屏幕(${mark.screenX}, ${mark.screenY}) -> 显示(${displayX}, ${displayY})`);
             target.textContent = mark.id;
             target.dataset.drilled = 'false';
             
@@ -1241,12 +1234,28 @@ function initForgingStep() {
                 createForgePoint(180 + i * 35, 140, i + 1);
             }
         } else {
-            // 使用实际标记位置，保持原始坐标
+            // 使用实际标记位置，修复坐标显示问题
             showMessage(`在 ${actualForges} 个标记位置进行锻造塑形。`);
             for (let i = 0; i < actualForges; i++) {
                 const mark = markPositions[i];
-                // 直接使用标记的真实位置，不做任何调整
-                createForgePoint(mark.x, mark.y, mark.id);
+                
+                // 获取锻造区域的当前尺寸
+                const anvilRect = anvilArea.getBoundingClientRect();
+                
+                // 计算正确的显示位置
+                let displayX = mark.x;
+                let displayY = mark.y;
+                
+                // 如果有保存的画布信息，使用它来重新计算位置
+                if (mark.canvasWidth && mark.rectWidth) {
+                    const scaleX = anvilRect.width / mark.rectWidth;
+                    const scaleY = anvilRect.height / mark.rectHeight;
+                    displayX = mark.screenX * scaleX;
+                    displayY = mark.screenY * scaleY;
+                }
+                
+                createForgePoint(displayX, displayY, mark.id);
+                console.log(`锻造点 ${mark.id}: 原始Canvas(${mark.x}, ${mark.y}) -> 显示(${displayX}, ${displayY})`);
             }
         }
         
