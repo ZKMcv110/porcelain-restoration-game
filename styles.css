@@ -2971,4 +2971,242 @@ input:checked + .slider:before {
         bottom: -10px;
         z-index: 1;
     }
+    
+    /* 工艺教程页面移动端优化 */
+    .tutorial-content {
+        padding: 15px 10px !important;
+        max-width: 100% !important;
+    }
+    
+    .tutorial-content h2 {
+        font-size: 1.8em !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .tutorial-sections {
+        gap: 15px !important;
+    }
+    
+    .tutorial-section {
+        padding: 15px !important;
+        margin: 0 5px !important;
+    }
+    
+    .tutorial-section h3 {
+        font-size: 1.2em !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .tutorial-section p, .tutorial-section li {
+        font-size: 0.9em !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* 游戏设置页面移动端优化 */
+    .settings-content {
+        padding: 15px 10px !important;
+        max-width: 100% !important;
+    }
+    
+    .settings-content h2 {
+        font-size: 1.8em !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .settings-sections {
+        gap: 15px !important;
+    }
+    
+    .setting-item {
+        padding: 15px !important;
+        margin: 0 5px !important;
+    }
+    
+    .setting-item h3 {
+        font-size: 1.1em !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .setting-controls {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+    
+    .setting-controls span {
+        font-size: 1em !important;
+    }
+    
+    .setting-controls select {
+        width: 100% !important;
+        max-width: 200px !important;
+    }
+    
+    .switch {
+        width: 50px !important;
+        height: 28px !important;
+    }
+    
+    /* 作品展览页面移动端优化 */
+    .gallery-content {
+        padding: 15px 10px !important;
+        max-width: 100% !important;
+    }
+    
+    .gallery-content h2 {
+        font-size: 1.8em !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        padding: 10px 5px !important;
+    }
+    
+    .gallery-item {
+        padding: 15px !important;
+        margin: 0 5px !important;
+    }
+    
+    .gallery-item h3 {
+        font-size: 1.1em !important;
+    }
+    
+    .gallery-item p {
+        font-size: 0.85em !important;
+    }
+    
+    .artifact-image {
+        height: 150px !important;
+    }
+    
+    /* 视频展示页面移动端优化 */
+    .video-gallery-content {
+        padding: 15px 10px !important;
+        max-width: 100% !important;
+    }
+    
+    .video-gallery-content h2 {
+        font-size: 1.8em !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .video-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        padding: 10px 5px !important;
+    }
+    
+    .video-item {
+        padding: 15px !important;
+        margin: 0 5px !important;
+    }
+    
+    .video-item h3 {
+        font-size: 1.1em !important;
+    }
+    
+    .video-item p {
+        font-size: 0.85em !important;
+    }
+}
+
+/* 超小屏幕进一步优化 */
+@media (max-width: 480px) {
+    /* 工艺教程超小屏幕优化 */
+    .tutorial-content {
+        padding: 10px 5px !important;
+    }
+    
+    .tutorial-content h2 {
+        font-size: 1.5em !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .tutorial-section {
+        padding: 12px !important;
+        margin: 0 2px !important;
+    }
+    
+    .tutorial-section h3 {
+        font-size: 1.1em !important;
+    }
+    
+    .tutorial-section p, .tutorial-section li {
+        font-size: 0.85em !important;
+    }
+    
+    /* 游戏设置超小屏幕优化 */
+    .settings-content {
+        padding: 10px 5px !important;
+    }
+    
+    .settings-content h2 {
+        font-size: 1.5em !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .setting-item {
+        padding: 12px !important;
+        margin: 0 2px !important;
+    }
+    
+    .setting-item h3 {
+        font-size: 1em !important;
+    }
+    
+    .setting-controls span {
+        font-size: 0.9em !important;
+    }
+    
+    /* 作品展览超小屏幕优化 */
+    .gallery-content {
+        padding: 10px 5px !important;
+    }
+    
+    .gallery-content h2 {
+        font-size: 1.5em !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .gallery-item {
+        padding: 12px !important;
+        margin: 0 2px !important;
+    }
+    
+    .gallery-item h3 {
+        font-size: 1em !important;
+    }
+    
+    .gallery-item p {
+        font-size: 0.8em !important;
+    }
+    
+    .artifact-image {
+        height: 120px !important;
+    }
+    
+    /* 视频展示超小屏幕优化 */
+    .video-gallery-content {
+        padding: 10px 5px !important;
+    }
+    
+    .video-gallery-content h2 {
+        font-size: 1.5em !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .video-item {
+        padding: 12px !important;
+        margin: 0 2px !important;
+    }
+    
+    .video-item h3 {
+        font-size: 1em !important;
+    }
+    
+    .video-item p {
+        font-size: 0.8em !important;
+    }
 }
