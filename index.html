@@ -7,8 +7,27 @@
     <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
+    <!-- 开场剧情界面 -->
+    <div id="story-intro" class="screen active">
+        <div class="story-background"></div>
+        <div class="story-overlay">
+            <div class="story-content">
+                <div class="story-text-container">
+                    <p id="story-text" class="story-dialogue"></p>
+                    <div class="story-controls">
+                        <div class="next-button" id="next-story" onclick="nextStoryLine()">
+                            <span class="triangle">▶</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 跳过剧情按钮 -->
+            <button class="skip-story-btn" onclick="skipStory()">跳过剧情</button>
+        </div>
+    </div>
+
     <!-- 主菜单界面 -->
-    <div id="main-menu" class="screen active">
+    <div id="main-menu" class="screen">
         <div class="sky-background"></div>
         <div class="menu-content">
             <h1 class="game-title">锯瓷修复大师</h1>
@@ -27,7 +46,6 @@
         <div class="game-header">
             <div class="header-left">
                 <button class="back-btn" onclick="backToMenu()">返回主菜单</button>
-                <button class="restart-btn" onclick="restartGame()">重新开始</button>
             </div>
             <h2 id="step-title">第一步：捧匣与启封</h2>
             <div class="progress-container">
@@ -72,7 +90,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="story-text hidden" id="story-text"></div>
+                    <div class="story-text hidden" id="step1-story-text"></div>
                 </div>
             </div>
         </div>
@@ -106,9 +124,7 @@
                         <button class="tool-btn" data-tool="water">💧 清水</button>
                     </div>
                     <div class="pieces-container" id="pieces-container"></div>
-                    <div class="assembly-area" id="assembly-area">
-                        <p>点击器物进行清洗，清洗完成后会自动归位</p>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -310,8 +326,11 @@
             <div class="step-content hidden" id="step8-content">
                 <div class="polishing-workspace">
                     <div class="completed-vessel" id="completed-vessel"></div>
-                    <div class="polishing-area"></div>
-                    <p class="instruction">按住拖拽来抛光各个区域</p>
+                    <button class="polish-button" id="polish-button">
+                        <span class="polish-icon">✨</span>
+                        开始抛光
+                    </button>
+                    <p class="instruction">点击按钮完成最终抛光</p>
                 </div>
             </div>
         </div>
