@@ -1503,6 +1503,21 @@ function initInstallationStep() {
             showMessage('📱 移动端优化：锔钉更大，检测范围扩大到120px，更易操作！');
         }
         
+        // 创建锔钉库存标题
+        const inventoryTitle = document.createElement('h4');
+        inventoryTitle.textContent = '锔钉库存';
+        inventoryTitle.style.cssText = `
+            color: #FFD700;
+            margin-bottom: 15px;
+            text-align: center;
+        `;
+        staplesInventory.appendChild(inventoryTitle);
+        
+        // 创建锔钉容器 - 横向排列
+        const staplesContainer = document.createElement('div');
+        staplesContainer.className = 'staples-container';
+        staplesInventory.appendChild(staplesContainer);
+        
         // 创建锔钉库存 - 根据实际需要的数量，支持拖拽
         for (let i = 0; i < maxInstalls; i++) {
             const staple = document.createElement('div');
@@ -1511,7 +1526,7 @@ function initInstallationStep() {
                 height: ${isMobile ? '30px' : '20px'};
                 background: linear-gradient(90deg, #CD7F32, #B87333);
                 border-radius: 10px;
-                margin: ${isMobile ? '15px' : '10px'} auto;
+                margin: ${isMobile ? '5px' : '5px'};
                 cursor: grab;
                 transition: all 0.3s ease;
                 position: relative;
@@ -1524,6 +1539,7 @@ function initInstallationStep() {
                 font-size: ${isMobile ? '14px' : '12px'};
                 color: #FFF;
                 font-weight: bold;
+                flex-shrink: 0;
             `;
             staple.innerHTML = `钉${i + 1}`;
             staple.dataset.used = 'false';
@@ -1767,7 +1783,7 @@ function initInstallationStep() {
                 });
             }
             
-            staplesInventory.appendChild(staple);
+            staplesContainer.appendChild(staple);
         }
         
         // 使用之前钻孔步骤的实际位置创建安装点 - 修复坐标转换
