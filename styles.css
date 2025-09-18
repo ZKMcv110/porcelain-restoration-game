@@ -50,30 +50,227 @@
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
+    position: relative;
+}
+
+/* 对话框四角装饰 */
+.story-text-container {
+    position: relative;
+}
+
+.story-text-container:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 215, 0, 0.03) 2px,
+            rgba(255, 215, 0, 0.03) 4px
+        );
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+/* 添加四个角落的装饰元素 */
+.story-content::before,
+.story-content::after {
+    content: '◆';
+    position: absolute;
+    color: rgba(255, 215, 0, 0.6);
+    font-size: 12px;
+    z-index: 10;
+    animation: cornerGlow 3s ease-in-out infinite alternate;
+}
+
+.story-content::before {
+    top: -10px;
+    left: 20px;
+}
+
+.story-content::after {
+    top: -10px;
+    right: 20px;
+}
+
+@keyframes cornerGlow {
+    0% {
+        opacity: 0.4;
+        text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    }
+    100% {
+        opacity: 0.8;
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
 }
 
 .story-text-container {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 15px;
-    padding: 30px;
-    padding-bottom: 60px; /* 为内部三角形按钮留出空间 */
-    margin-bottom: 20px;
-    border: 2px solid rgba(255, 215, 0, 0.6);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    position: relative; /* 为绝对定位的三角形提供参考 */
+    background: 
+        linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 20, 40, 0.7) 50%, rgba(40, 20, 20, 0.6) 100%),
+        radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+    border-radius: 30px 30px 30px 8px;
+    padding: 40px;
+    padding-bottom: 75px;
+    margin-bottom: 25px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 215, 0, 0.4),
+        0 0 0 3px rgba(139, 69, 19, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(15px);
+    position: relative;
+    animation: chatBoxFloat 4s ease-in-out infinite;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+/* 装饰性边框纹理 */
+.story-text-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 215, 0, 0.03) 2px,
+            rgba(255, 215, 0, 0.03) 4px
+        );
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+/* 左下角对话尾巴 */
+.story-text-container::after {
+    content: '';
+    position: absolute;
+    bottom: -18px;
+    left: 45px;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid rgba(20, 20, 40, 0.7);
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.4));
+    animation: tailFloat 4s ease-in-out infinite;
+}
+
+.story-text-container:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 215, 0, 0.6),
+        0 0 0 3px rgba(139, 69, 19, 0.5),
+        0 0 30px rgba(255, 215, 0, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* 聊天框浮动动画 */
+@keyframes chatBoxFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-2px) rotate(0.3deg);
+    }
+    50% {
+        transform: translateY(-4px) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-2px) rotate(-0.3deg);
+    }
+}
+
+/* 对话尾巴浮动动画 */
+@keyframes tailFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+/* 装饰性光效 */
+.story-text-container {
+    position: relative;
+}
+
+.story-text-container:hover::before {
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 215, 0, 0.08) 2px,
+            rgba(255, 215, 0, 0.08) 4px
+        );
 }
 
 .story-dialogue {
     color: #FFFFFF;
     font-size: 1.2em;
     line-height: 1.8;
-    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    font-family: 'Microsoft YaHei', '微软雅黑', 'Noto Serif SC', serif;
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.9),
+        0 0 10px rgba(255, 215, 0, 0.2);
     margin: 0;
     min-height: 60px;
-    animation: fadeInText 1s ease-in-out;
     font-weight: 500;
+    opacity: 0;
+    animation: typewriterFadeIn 0.8s ease-out forwards;
+    position: relative;
+    padding: 15px;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+/* 文字内容区域的装饰边框 */
+.story-dialogue::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+/* 为中英文添加不同的样式 */
+.story-dialogue br + br + * {
+    color: rgba(255, 255, 255, 0.9);
+    font-style: italic;
+    font-size: 0.95em;
+}
+
+/* 打字机淡入效果 */
+@keyframes typewriterFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInText {
@@ -124,34 +321,141 @@
 }
 
 .next-button {
-    background: linear-gradient(145deg, #FFD700, #FFA500);
-    border: none;
+    background: 
+        linear-gradient(145deg, #FFD700, #FF8C00, #DAA520),
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    border: 2px solid rgba(139, 69, 19, 0.6);
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-    animation: pulse 2s infinite;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 10px 25px rgba(255, 215, 0, 0.4),
+        0 0 0 0 rgba(255, 215, 0, 0.7),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    animation: nextButtonPulse 3s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 按钮内部装饰环 */
+.next-button::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    border: 1px solid rgba(139, 69, 19, 0.3);
+    border-radius: 50%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.6s ease;
+}
+
+/* 按钮外部装饰环 */
+.next-button::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.next-button:hover::before {
+    transform: rotate(180deg);
+    border-color: rgba(139, 69, 19, 0.6);
+}
+
+.next-button:hover::after {
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 .next-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+    transform: scale(1.1) rotate(8deg);
+    box-shadow: 
+        0 15px 40px rgba(255, 215, 0, 0.6),
+        0 0 0 12px rgba(255, 215, 0, 0.15),
+        0 0 30px rgba(255, 215, 0, 0.4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+    border-color: rgba(139, 69, 19, 0.8);
 }
 
 .next-button:active {
-    transform: scale(0.95);
+    transform: scale(0.95) rotate(-3deg);
+    transition: all 0.1s ease;
+}
+
+/* 按钮脉冲动画 */
+@keyframes nextButtonPulse {
+    0%, 100% {
+        box-shadow: 
+            0 10px 25px rgba(255, 215, 0, 0.4),
+            0 0 0 0 rgba(255, 215, 0, 0.7),
+            inset 0 2px 0 rgba(255, 255, 255, 0.3),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 10px 25px rgba(255, 215, 0, 0.4),
+            0 0 0 15px rgba(255, 215, 0, 0),
+            inset 0 2px 0 rgba(255, 255, 255, 0.3),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    }
 }
 
 .triangle {
     color: #8B4513;
-    font-size: 1.5em;
+    font-size: 1.6em;
     font-weight: bold;
-    margin-left: 3px;
+    margin-left: 4px;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: triangleBounce 2s ease-in-out infinite;
+}
+
+.next-button:hover .triangle {
+    color: #654321;
+    transform: translateX(2px);
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* 三角形轻微弹跳动画 */
+@keyframes triangleBounce {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(1px);
+    }
+}
+
+/* 打字光标样式 */
+.typing-cursor {
+    color: #FFD700;
+    font-weight: bold;
+    animation: cursorBlink 1s infinite;
+    margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
 }
 
 @keyframes pulse {

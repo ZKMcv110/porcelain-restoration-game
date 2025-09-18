@@ -1,28 +1,51 @@
 // 开场剧情数据
 const storyLines = [
-    "大家好，今天咱们来讲一个关于'锔瓷'技艺跨越百年的故事——它不只修补瓷器，更修复的是文化、记忆和民族的魂。",
-    "故事开始于国家博物馆，一尊明代的青花瓶静静立在展柜中，上面有七道金线和锔钉缀成的北斗七星——而这每道痕迹，背后都藏着一段历史。",
-    "时间回到1928年，北平琉璃厂。少年学徒林怀瑾一不小心，打碎了店里要鉴赏的贡瓶，急得不知如何是好。",
-    "这时，一位老匠人郭守愚现身了，他说：'瓷虽碎了，但魂不能散。'他拿出金刚钻，开始修补——",
-    "七天七夜，锔钉像星星一样落在瓷片上，最后一道裂痕被补上。临走前，老人留下一句话：'万物皆有裂缝，那是光照进来的地方。'",
-    "转眼到了1937年，卢沟桥事变爆发，战火波及琉璃厂。这时林怀瑾已是掌柜，他把锔瓷藏品紧急藏进地窖。",
-    "日军来搜查，为掩护暗格中的锔瓶，林怀瑾的妻子毅然推倒博古架——瓷器碎声响彻店里，日军大笑离去。",
-    "林怀瑾一边颤抖着捡碎片，一边把妻子的银簪熔成锔钉，修补这只瓶。当最后一颗锔钉落下——城外传来平型关大捷的消息。",
-    "时间跳到1972年，林家第三代传人林望舒在干校牛棚里，偷偷跟着八十岁的郭智军学习锔瓷。",
-    "老人用草秆代替锔钉教他，说：'锔瓷有三重境界——修形、续韵、铸魂。而现在我们要修补的，是文明的断层。'",
-    "返城前夜，老人把祖传的金刚钻埋进黄土，说：'等山河重光了，让它再见天日。'",
-    "来到2013年，海外拍卖会上出现一件所谓'战争遗珍'锔瓷瓶，日本藏家声称是他们的收藏。",
-    "这时，林家第四代——留学归来的李欢带着证据来了：老照片、银簪鉴定报告，还有她父亲凭记忆绘制的锔钉图谱。",
-    "当图谱投影与故宫星空完美重合的那一刻，全场肃然起敬——锔瓷的身世，不言自明。",
-    "最后来到2023年，在太行山的非遗研学营里，李欢把金刚钻交到年轻人手中。",
-    "她说：'我的老师说过——每一代人都要修补时代的裂缝。如今要锔合的不再是瓷器，是千年不断的文脉。'",
-    "镜头扫过今天的中国：锔瓷灯饰点亮古城，航天材料融合传统工艺，中国修复标准走向世界……",
-    "而那尊锔瓶始终静立博物馆中，锔钉如星河闪烁，仿佛在说：",
-    "'破碎不是结束，而是新生的开始——这是我们民族在裂痕中坚守、在破碎中重圆的智慧。'",
-    "这，就是锔瓷告诉世界的答案。"
+    "大家好，今天咱们来讲一个关于'锔瓷'技艺跨越百年的故事——它不只修补瓷器，更修复的是文化、记忆和民族的魂。<br><br>Hello everyone, today we are going to tell a story about the century-spanning craft of 'Juci' (porcelain mending) — it doesn't just repair porcelain, but more importantly, it mends culture, memories, and the soul of a nation.",
+    
+    "故事开始于国家博物馆，一尊明代的青花瓶静静立在展柜中，上面有七道金线和锔钉缀成的北斗七星——而这每道痕迹，背后都藏着一段历史。<br><br>The story begins at the National Museum, where a Ming Dynasty blue-and-white porcelain vase stands quietly in a display case, adorned with seven gold threads and metal staples forming the Big Dipper — each mark hides a piece of history behind it.",
+    
+    "时间回到1928年，北平琉璃厂。少年学徒林怀瑾一不小心，打碎了店里要鉴赏的贡瓶，急得不知如何是好。<br><br>Time travels back to 1928, in Liulichang, Beiping. An apprentice boy named Lin Huaijin accidentally broke a tribute vase that the shop was going to appraise, and he was at a loss for what to do.",
+    
+    "这时，一位老匠人郭守愚现身了，他说：'瓷虽碎了，但魂不能散。'他拿出金刚钻，开始修补——<br><br>At that moment, an elderly craftsman named Guo Shouyu appeared and said, 'Although the porcelain is broken, its soul must not be scattered.' He took out his diamond drill and began to mend it —",
+    
+    "七天七夜，锔钉像星星一样落在瓷片上，最后一道裂痕被补上。<br><br>For seven days and seven nights, the staples fell onto the porcelain shards like stars, until the last crack was sealed.",
+    
+    "临走前，老人留下一句话：'万物皆有裂缝，那是光照进来的地方。'<br><br>Before leaving, the old man left a saying: 'Every thing has cracks; that's where the light shines through.'",
+    
+    "转眼到了1937年，卢沟桥事变爆发，战火波及琉璃厂。这时林怀瑾已是掌柜，他把锔瓷藏品紧急藏进地窖。<br><br>In the blink of an eye, it was 1937. The Marco Polo Bridge Incident broke out, and the war spread to Liulichang. By then, Lin Huaijin had become the shopkeeper. He urgently hid his Juci collections in the cellar.",
+    
+    "日军来搜查，为掩护暗格中的锔瓶，林怀瑾的妻子毅然推倒博古架——瓷器碎声响彻店里，日军大笑离去。<br><br>When Japanese soldiers came to search, to protect the Juci vase hidden in the secret compartment, Lin Huaijin's wife resolutely pushed over the antique shelf — the sound of shattering porcelain echoed through the shop, and the Japanese soldiers left laughing.",
+    
+    "林怀瑾一边颤抖着捡碎片，一边把妻子的银簪熔成锔钉，修补这只瓶。当最后一颗锔钉落下——城外传来平型关大捷的消息。<br><br>Trembling, Lin Huaijin picked up the shards and melted his wife's silver hairpin into staples to repair the vase. When the last staple was placed — news of the Pingxingguan Victory came from outside the city.",
+    
+    "时间跳到1972年，林家第三代传人林望舒在干校牛棚里，偷偷跟着八十岁的郭智军学习锔瓷。<br><br>Time jumps to 1972. Lin Wangshu, the third-generation descendant of the Lin family, was secretly learning Juci from 80-year-old Guo Zhijun in the cowshed of a cadre school.",
+    
+    "老人用草秆代替锔钉教他，说：'锔瓷有三重境界——修形、续韵、铸魂。而现在我们要修补的，是文明的断层。'<br><br>The old man taught him using straws instead of metal staples, saying, 'Juci has three realms — mending the form, continuing the charm, and forging the soul. What we need to mend now is the fault in civilization.'",
+    
+    "返城前夜，老人把祖传的金刚钻埋进黄土，说：'等山河重光了，让它再见天日。'<br><br>On the night before returning to the city, the old man buried the family heirloom diamond drill in the loess, saying, 'When the mountains and rivers regain their glory, let it see the light of day again.'",
+    
+    "来到2013年，海外拍卖会上出现一件所谓'战争遗珍'锔瓷瓶，日本藏家声称是他们的收藏。<br><br>Moving to 2013, a so-called 'war relic' Juci vase appeared at an overseas auction, with a Japanese collector claiming it as their collection.",
+    
+    "这时，林家第四代——留学归来的李欢带着证据来了：老照片、银簪鉴定报告，还有她父亲凭记忆绘制的锔钉图谱。<br><br>At this moment, the fourth-generation descendant of the Lin family — Li Huan, who had returned from studying abroad, arrived with evidence: old photos, an appraisal report of the silver hairpin, and a staple pattern diagram drawn by her father from memory.",
+    
+    "当图谱投影与故宫星空完美重合的那一刻，全场肃然起敬——锔瓷的身世，不言自明。<br><br>When the projected diagram perfectly aligned with the starry sky map of the Forbidden City, the entire audience fell silent in awe — the origin of the Juci vase was self-evident.",
+    
+    "最后来到2023年，在太行山的非遗研学营里，李欢把金刚钻交到年轻人手中。<br><br>Finally, in 2023, at an intangible cultural heritage study camp in the Taihang Mountains, Li Huan handed the diamond drill to the younger generation.",
+    
+    "她说：'我的老师说过——每一代人都要修补时代的裂缝。如今要锔合的不再是瓷器，是千年不断的文脉。'<br><br>She said, 'My teacher once said — every generation must mend the cracks of their era. What we need to stitch together now is no longer porcelain, but the unbroken cultural context spanning millennia.'",
+    
+    "镜头扫过今天的中国：锔瓷灯饰点亮古城，航天材料融合传统工艺，中国修复标准走向世界……<br><br>The camera pans across today's China: Juci-style lanterns light up ancient cities, aerospace materials integrate traditional craftsmanship, and China's restoration standards go global...",
+    
+    "而那尊锔瓶始终静立博物馆中，锔钉如星河闪烁，仿佛在说：<br><br>And that Juci vase still stands quietly in the museum, its staples shimmering like a galaxy, as if saying:",
+    
+    "'破碎不是结束，而是新生的开始——这是我们民族在裂痕中坚守、在破碎中重圆的智慧。'<br><br>'Brokenness is not an end, but the beginning of rebirth — this is the wisdom of our nation, persisting through cracks and reuniting through fragmentation.'",
+    
+    "这，就是锔瓷告诉世界的答案。<br><br>This is the answer that Juci tells the world."
 ];
 
 let currentStoryIndex = 0;
+let typingTimer = null;
+let isTyping = false;
 
 // 开场剧情控制
 function initStoryIntro() {
@@ -31,6 +54,13 @@ function initStoryIntro() {
 }
 
 function nextStoryLine() {
+    // 停止当前的打字效果
+    if (typingTimer) {
+        clearTimeout(typingTimer);
+        typingTimer = null;
+    }
+    isTyping = false;
+    
     if (currentStoryIndex < storyLines.length - 1) {
         currentStoryIndex++;
         updateStoryText();
@@ -50,14 +80,91 @@ function showMainMenu() {
 function updateStoryText() {
     const storyText = document.getElementById('story-text');
     if (storyText) {
+        // 停止之前的打字效果
+        if (typingTimer) {
+            clearTimeout(typingTimer);
+            typingTimer = null;
+        }
+        isTyping = false;
+        
         // 添加淡出效果
         storyText.style.opacity = '0';
         
         setTimeout(() => {
-            storyText.textContent = storyLines[currentStoryIndex];
-            storyText.style.opacity = '1';
+            // 使用打字机效果显示文本
+            typewriterEffect(storyText, storyLines[currentStoryIndex]);
         }, 300);
     }
+}
+
+// 流入式文字效果函数
+function typewriterEffect(element, text, speed = 40) {
+    // 停止之前的打字效果
+    if (typingTimer) {
+        clearTimeout(typingTimer);
+        typingTimer = null;
+    }
+    
+    element.innerHTML = '';
+    element.style.opacity = '1';
+    isTyping = true;
+    
+    // 将HTML标签替换为占位符，提取纯文本
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = text;
+    
+    // 获取纯文本内容
+    const plainText = tempDiv.textContent || tempDiv.innerText || '';
+    
+    let i = 0;
+    let displayText = '';
+    
+    function typeChar() {
+        // 检查是否应该停止打字
+        if (!isTyping) {
+            return;
+        }
+        
+        if (i < plainText.length) {
+            displayText += plainText.charAt(i);
+            
+            // 重新构建HTML，保持原有的换行结构
+            let htmlText = displayText;
+            
+            // 检查原文本中的换行位置，在相应位置插入<br>标签
+            if (text.includes('<br><br>')) {
+                // 找到中英文分隔的位置
+                const originalLines = text.split('<br><br>');
+                if (originalLines.length >= 2) {
+                    const chineseText = originalLines[0];
+                    const englishText = originalLines[1];
+                    
+                    const chineseLength = chineseText.length;
+                    
+                    if (displayText.length <= chineseLength) {
+                        // 还在显示中文部分
+                        htmlText = displayText;
+                    } else {
+                        // 开始显示英文部分
+                        const englishPart = displayText.substring(chineseLength);
+                        htmlText = chineseText + '<br><br>' + englishPart;
+                    }
+                }
+            }
+            
+            element.innerHTML = htmlText + '<span class="typing-cursor">|</span>';
+            
+            i++;
+            typingTimer = setTimeout(typeChar, speed);
+        } else {
+            // 完成打字，移除光标
+            element.innerHTML = text;
+            isTyping = false;
+            typingTimer = null;
+        }
+    }
+    
+    typeChar();
 }
 
 function skipStory() {
