@@ -87,12 +87,22 @@ function updateStoryText() {
         }
         isTyping = false;
         
+        // 移除打字样式
+        storyText.classList.remove('typing');
+        
         // 添加淡出效果
         storyText.style.opacity = '0';
         
         setTimeout(() => {
+            // 添加打字样式
+            storyText.classList.add('typing');
             // 使用打字机效果显示文本
             typewriterEffect(storyText, storyLines[currentStoryIndex]);
+            
+            // 打字完成后移除样式
+            setTimeout(() => {
+                storyText.classList.remove('typing');
+            }, storyLines[currentStoryIndex].length * 40 + 1000);
         }, 300);
     }
 }
@@ -118,6 +128,9 @@ function typewriterEffect(element, text, speed = 40) {
     
     let i = 0;
     let displayText = '';
+    let soundCounter = 0; // 声音计数器，用于摩尔斯码模式
+    // 摩尔斯码模式：4短1间隙，4短1间隙，循环
+    const morsePattern = [1, 1, 1, 1, 0, 1, 1, 1, 1, 0]; // 1=播放声音，0=静音
     
     function typeChar() {
         // 检查是否应该停止打字
@@ -126,7 +139,20 @@ function typewriterEffect(element, text, speed = 40) {
         }
         
         if (i < plainText.length) {
-            displayText += plainText.charAt(i);
+            const currentChar = plainText.charAt(i);
+            displayText += currentChar;
+            
+            // 按照摩尔斯码模式播放音效
+            if (gameState && gameState.soundEnabled && soundCounter % 4 === 0) {
+                // 检查当前字符是否为有效字符
+                if (currentChar.match(/[\u4e00-\u9fa5a-zA-Z0-9]/)) {
+                    const patternIndex = Math.floor(soundCounter / 4) % morsePattern.length;
+                    if (morsePattern[patternIndex] === 1) {
+                        gameState.playSound('typing');
+                    }
+                }
+            }
+            soundCounter++;
             
             // 重新构建HTML，保持原有的换行结构
             let htmlText = displayText;
@@ -423,7 +449,8 @@ class GameState {
             unlock: this.createUnlockSound(),
             brush: this.createBrushSound(),
             drill: this.createDrillSound(),
-            hammer: this.createHammerSound()
+            hammer: this.createHammerSound(),
+            typing: this.createTypingSound()
         };
     }
 
@@ -534,6 +561,32 @@ class GameState {
             
             oscillator.start(this.audioContext.currentTime);
             oscillator.stop(this.audioContext.currentTime + 0.1);
+        };
+    }
+
+    createTypingSound() {
+        return () => {
+            if (!this.audioContext) return;
+            
+            // 创建电报风格的"滴"声音效
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            // 电报声音特征：高频、短促、清脆，带微小变化
+            oscillator.type = 'sine';
+            const baseFreq = 750 + Math.random() * 100; // 750-850Hz的轻微变化
+            oscillator.frequency.setValueAtTime(baseFreq, this.audioContext.currentTime);
+            
+            // 电报特有的快速音量包络：瞬间到达最大音量，然后快速衰减
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.25, this.audioContext.currentTime + 0.003); // 3ms快速升起
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.06); // 60ms衰减
+            
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + 0.06);
         };
     }
 

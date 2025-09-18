@@ -116,6 +116,7 @@
     border-radius: 30px 30px 30px 8px;
     padding: 40px;
     padding-bottom: 75px;
+    padding-right: 100px; /* 为右侧按钮预留空间 */
     margin-bottom: 25px;
     border: 2px solid transparent;
     background-clip: padding-box;
@@ -130,6 +131,10 @@
     animation: chatBoxFloat 4s ease-in-out infinite;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    /* 限制最大高度，防止覆盖下方元素 */
+    max-height: 65vh;
+    /* 自动滚动处理长文本 */
+    overflow-y: auto;
 }
 
 /* 装饰性边框纹理 */
@@ -291,6 +296,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    z-index: 100; /* 确保按钮在最上层 */
 }
 
 /* 跳过剧情按钮 */
@@ -419,7 +425,7 @@
     color: #8B4513;
     font-size: 1.6em;
     font-weight: bold;
-    margin-left: 4px;
+    margin-top: 4px; /* 向下三角需要稍微向上偏移 */
     transition: all 0.3s ease;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     animation: triangleBounce 2s ease-in-out infinite;
@@ -427,17 +433,17 @@
 
 .next-button:hover .triangle {
     color: #654321;
-    transform: translateX(2px);
+    transform: translateY(2px); /* 悬停时向下移动 */
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
 }
 
 /* 三角形轻微弹跳动画 */
 @keyframes triangleBounce {
     0%, 100% {
-        transform: translateX(0);
+        transform: translateY(0);
     }
     50% {
-        transform: translateX(1px);
+        transform: translateY(2px); /* 向下弹跳 */
     }
 }
 
@@ -447,6 +453,7 @@
     font-weight: bold;
     animation: cursorBlink 1s infinite;
     margin-left: 2px;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
 }
 
 @keyframes cursorBlink {
@@ -458,6 +465,27 @@
     }
 }
 
+/* 打字时的文字闪烁效果 */
+.story-dialogue.typing {
+    position: relative;
+}
+
+.story-dialogue.typing::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 215, 0, 0.1) 50%, 
+        transparent 100%);
+    animation: typingGlow 2s ease-in-out infinite;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
 @keyframes pulse {
     0%, 100% {
         box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
@@ -465,6 +493,36 @@
     50% {
         box-shadow: 0 5px 25px rgba(255, 215, 0, 0.8);
     }
+}
+
+/* 打字发光动画 */
+@keyframes typingGlow {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* 自定义滚动条样式 */
+.story-text-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.story-text-container::-webkit-scrollbar-track {
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 4px;
+}
+
+.story-text-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.5);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.story-text-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.8);
 }
 
 /* 移动端开场剧情优化 */
@@ -475,7 +533,9 @@
     
     .story-text-container {
         padding: 20px;
+        padding-right: 80px; /* 移动端减少右侧预留空间 */
         margin-bottom: 15px;
+        max-height: 55vh; /* 移动端高度限制 */
     }
     
     .story-dialogue {
@@ -501,6 +561,8 @@
     
     .story-text-container {
         padding: 15px;
+        padding-right: 70px; /* 超小屏幕进一步减少预留空间 */
+        max-height: 50vh; /* 超小屏幕高度限制 */
     }
     
     .story-dialogue {
